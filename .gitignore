@@ -15,6 +15,7 @@
 !requirements.txt
 !.gitignore
 !start.sh
+!killer.sh
 __pycache__/
 *.pyc
 *.pyo

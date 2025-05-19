@@ -45,6 +45,7 @@ config_flags.DEFINE_config_file("config", "config/base_rl.py", "Training configu
 flags.DEFINE_string("Project_name", None, "Override 'Project_name' in config.")
 flags.DEFINE_bool("debug_ver", None, "Override 'DEBUG' in config.")
 flags.DEFINE_bool("entropy_loss", False, "override entropy loss switch")
+flags.DEFINE_bool("reward_cot", False, "override reward cot")
 
 FLAGS = flags.FLAGS
 FLAGS(sys.argv)
@@ -57,10 +58,13 @@ def main(_):
         config.Project_name = FLAGS.Project_name
     if FLAGS.debug_ver is not None:
         config.debug_ver = FLAGS.debug_ver
+    if FLAGS.entropy_loss is not None:
+        config.rl_conf.entropy_loss = FLAGS.entropy_loss
+    if FLAGS.reward_cot is not None:
+        config.reward.reward_long_cot = FLAGS.reward_cot
+    
     if config.debug_ver:
         config.Project_name = "DEBUG_NULL"
-    if FLAGS.entropy_loss:
-        config.rl_conf.entropy_loss = True
 
     
     # basic Accelerate and logging setup
