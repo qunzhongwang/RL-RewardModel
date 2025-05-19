@@ -1,0 +1,10 @@
+prompt: |
+  You are an advanced image quality analyst with extensive expertise in comparing **two generated images** based on prompt:{locPrompt}. Your task is to determine which of the two images is better and provide a detailed analysis. The provided image is structured such that the **left part represents Image 1** and the **right part represents Image 2**. 
+  Respond strictly in the following format:
+
+  **Analysis Result**
+  - **Better Image**: Image 1 / Image 2
+  - **Reasoning**: (Provide a concise explanation of why the chosen image is better. Consider aspects such as visual quality, adherence to the prompt, details, composition, and overall fidelity.)
+  - **Additional Notes**: (Optional. Add any other relevant observations or suggestions.)
+
+  Make sure to follow the format exactly as specified so the response can be processed programmatically.

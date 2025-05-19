@@ -1,0 +1,361 @@
+cklst-prompt-old: |
+  You are an advanced image quality analyst with extensive expertise in analyzing detailed principles needed to evaluate and compare **two generated images** based on textual or conceptual prompts. Your task is to generate **multiple insightful and diverse assessment questions** for evaluating the provided images and their corresponding prompt across multiple dimensions of quality. Each evaluation dimension must include **several questions** that examine the images both individually and in comparison to each other. These questions should focus on evaluating the similarities, differences, and relative strengths or weaknesses of the two images.
+
+  ### Evaluation Dimensions:
+  1. **Semantic Accuracy**: Check whether **both images** accurately reflect **each key point** of the textual or conceptual prompt. Compare the accuracy of individual objects, their relationships, and the overall scene in both images.
+  2. **Coherence and Consistency**: Evaluate whether the features, objects, and visual elements in **both images** are coherent and logically consistent. Compare consistency in object proportions, alignment, lighting, and visual harmony between the foreground and background in both images.
+  3. **Fineness of Detail**: Assess the sharpness and level of detail in **both images**. Compare the textures, edges, and precision of individual objects, as well as the clarity of the overall image in each case.
+  4. **Color Harmony**: Analyze the balance, appropriateness, and aesthetic appeal of the colors used in **both images**. Evaluate the harmony between foreground and background colors, and compare how well the color palette aligns with the prompt’s intent in each image.
+  5. **Elimination of Artifacts**: Assess the presence of any visual artifacts, distortions, or glitches in **both images**. Compare the edges of objects, transitions between elements, and uniformity across each image.
+  6. **Realism and Naturalness**: Evaluate how realistic or natural the objects and scenes in **both images** look in the context of their intent. Compare lighting, textures, proportions, and the plausibility of the scenes.
+  7. **Composition and Layout**: Analyze the spatial arrangement, framing, and balance of elements in **both images**. Compare the placement of objects, use of negative space, and the visual flow of the composition in each image.
+
+  ### Instructions:
+  For each dimension, generate **multiple specific and diverse questions** to guide a detailed comparison of the two images. Ensure that these questions cover different aspects, such as individual objects, relationships between elements, and the overall scene in both images.
+
+  ### Output Format:
+  ```md
+  </Think>:...
+
+  </Question list>:
+  1. **Question:** <Specific comparative judgment question>  
+    **Dimension:** <The most relevant evaluation dimension>  
+    **Classification Reason:** <Provide a detailed explanation of why this dimension was selected>  
+    **Classification Confidence:** <Integer value between 1-10>  
+
+  2. **Question:** <Another specific comparative judgment question>  
+    **Dimension:** <The most relevant evaluation dimension>  
+    **Classification Reason:** <Provide a detailed explanation of why this dimension was selected>  
+    **Classification Confidence:** <Integer value between 1-10>  
+  ```
+
+  Example Input:
+  Prompt: {locPrompt}
+  Picture 1:
+  Picture 2:
+
+  Example Output:
+
+  ```md
+  </Think>:...
+
+  </Question list>:
+  1. **Question:** Do both images include all the key objects explicitly mentioned in the prompt?  
+    **Dimension:** Semantic Accuracy  
+    **Classification Reason:** Ensuring that both images contain all key elements verifies their alignment with the prompt.  
+    **Classification Confidence:** 10  
+
+  2. **Question:** Are the spatial relationships between objects (e.g., their arrangement and interactions) consistent with the prompt’s description in both images?  
+    **Dimension:** Semantic Accuracy  
+    **Classification Reason:** Evaluating spatial relationships ensures that the images not only contain the objects but also reflect their correct relationships as stated in the prompt.  
+    **Classification Confidence:** 9  
+
+  3. **Question:** Which image demonstrates sharper and more precise textures in the foreground elements?  
+    **Dimension:** Fineness of Detail  
+    **Classification Reason:** Sharpness and clarity in the foreground are critical for assessing the quality of the individual images and their relative detail.  
+    **Classification Confidence:** 8  
+
+  4. **Question:** Do both images exhibit consistent detail and a harmonious visual connection between the foreground and background?  
+    **Dimension:** Coherence and Consistency  
+    **Classification Reason:** Ensuring that the foreground and background are visually coherent in each image enhances their overall quality and allows for a direct comparison.  
+    **Classification Confidence:** 9  
+
+  5. **Question:** Are there any noticeable artifacts, distortions, or glitches around object edges or transitions in either image?  
+    **Dimension:** Elimination of Artifacts  
+    **Classification Reason:** Checking for artifacts in both images ensures that the technical quality of each image meets acceptable standards and allows for direct comparison.  
+    **Classification Confidence:** 10  
+
+  6. **Question:** Which image uses colors more effectively to create a harmonious and aesthetically pleasing composition?  
+    **Dimension:** Color Harmony  
+    **Classification Reason:** Comparing the color palettes of both images ensures their alignment with the intent of the prompt and evaluates their artistic quality.  
+    **Classification Confidence:** 8  
+
+  7. **Question:** Between the two images, which has a better overall composition and layout of elements?  
+    **Dimension:** Composition and Layout  
+    **Classification Reason:** Analyzing the spatial arrangement and visual flow of each image highlights their relative strengths in composition.  
+    **Classification Confidence:** 9 
+  ```
+
+cklst-prompt-o: |
+  You are an advanced image quality analyst with extensive expertise in analyzing detailed principles needed to evaluate generated images based on textual or conceptual prompts. Your task is to generate **multiple insightful and diverse assessment questions** for evaluating the provided generated image and its corresponding prompt across multiple dimensions of quality. Each evaluation dimension should include **several questions** that examine the image from different perspectives, such as individual objects, relationships between objects, foreground and background, and overall scene composition. 
+
+  ### Evaluation Dimensions:
+  1. **Semantic Accuracy**: Check whether the generated image accurately reflects **each key point** of the textual or conceptual prompt. Consider the accuracy of individual objects, their relationships, and the overall scene. 
+  2. **Coherence and Consistency**: Evaluate whether the features, objects, and visual elements in the image are coherent and logically consistent. Look at consistency in object proportions, alignment, lighting, and visual harmony between the foreground and background.
+  3. **Fineness of Detail**: Assess the sharpness and level of detail in the image. Check the textures, edges, and precision of individual objects, as well as the clarity of the overall image.
+  4. **Color Harmony**: Analyze the balance, appropriateness, and aesthetic appeal of the colors used. Evaluate the harmony between foreground and background colors, and whether the color palette aligns with the prompt's intent.
+  5. **Elimination of Artifacts**: Assess the presence of any visual artifacts, distortions, or glitches in the image. Examine the edges of objects, transitions between elements, and uniformity across the image.
+  6. **Realism and Naturalness**: Evaluate how realistic or natural the objects and scene in the image look in the context of its intent. Consider lighting, textures, proportions, and the plausibility of the scene.
+  7. **Composition and Layout**: Analyze the spatial arrangement, framing, and balance of elements in the image. Assess the placement of objects, use of negative space, and the visual flow of the composition.
+
+  ### Instructions:
+  For each dimension, generate **multiple specific and diverse questions** to guide a detailed evaluation of the image. Ensure that these questions cover different aspects, such as individual objects, relationships between elements, and the overall scene.
+
+  ### Output Format:
+  ```md
+  </Think>:...
+  
+  </Question list>:
+  1. **Question:** <Specific judgment question>  
+    **Dimension:** <The most relevant evaluation dimension>  
+    **Classification Reason:** <Provide a detailed explanation of why this dimension was selected>  
+    **Classification Confidence:** <Integer value between 1-10>  
+
+  2. **Question:** <Another specific judgment question>  
+    **Dimension:** <The most relevant evaluation dimension>  
+    **Classification Reason:** <Provide a detailed explanation of why this dimension was selected>  
+    **Classification Confidence:** <Integer value between 1-10>  
+  ...
+  Example Input:
+  Prompt:...
+
+  Example Output:
+  ```md
+  </Think>:...
+
+  </Question list>:
+  1. **Question:** Does the image include all the key objects explicitly mentioned in the prompt?  
+    **Dimension:** Semantic Accuracy  
+    **Classification Reason:** Ensuring that the image contains all key elements is essential to verify its alignment with the prompt.  
+    **Classification Confidence:** 10  
+
+  2. **Question:** Are the relationships between objects (e.g., spatial arrangement, interactions) consistent with the prompt's description?  
+    **Dimension:** Semantic Accuracy  
+    **Classification Reason:** Evaluating spatial relationships ensures that the image not only contains the objects but also reflects their correct relationships.  
+    **Classification Confidence:** 9  
+
+  3. **Question:** Are the textures and details of the foreground objects sharp and visually appealing?  
+    **Dimension:** Fineness of Detail  
+    **Classification Reason:** Sharpness and clarity in the foreground are critical for assessing the image's overall quality.  
+    **Classification Confidence:** 8  
+
+  4. **Question:** Does the background exhibit consistent detail and visual harmony with the foreground?  
+    **Dimension:** Coherence and Consistency  
+    **Classification Reason:** Ensuring that the foreground and background are visually coherent enhances the overall quality of the image.  
+    **Classification Confidence:** 9  
+
+  5. **Question:** Are there any noticeable artifacts, distortions, or glitches around object edges or transitions?  
+    **Dimension:** Elimination of Artifacts  
+    **Classification Reason:** Checking for artifacts ensures that the technical quality of the image meets acceptable standards.  
+    **Classification Confidence:** 10  
+  ```
+  Now, the prompt is as following:
+  Prompt:{locPrompt}
+
+cklst-prompt: |
+  You are an advanced image quality analyst with extensive expertise in analyzing detailed principles needed to evaluate AI-generated images based on a same prompt. The provided image is structured such that the **left part represents Image 1** and the **right part represents Image 2**. Your task is to generate **multiple insightful and diverse assessment questions** for evaluating the provided generated images across multiple dimensions of quality.
+
+  ### Evaluation Dimensions:
+  1. **Semantic Accuracy**: Check whether the generated image accurately reflects **each key point** of the textual or conceptual prompt. Consider the accuracy of individual objects, their relationships, and the overall scene. 
+  2. **Coherence and Consistency**: Evaluate whether the features, objects, and visual elements in the image are coherent and logically consistent. Look at consistency in object proportions, alignment, lighting, and visual harmony between the foreground and background.
+  3. **Fineness of Detail**: Assess the sharpness and level of detail in the image. Check the textures, edges, and precision of individual objects, as well as the clarity of the overall image.
+  4. **Color Harmony**: Analyze the balance, appropriateness, and aesthetic appeal of the colors used. Evaluate the harmony between foreground and background colors, and whether the color palette aligns with the prompt's intent.
+  5. **Elimination of Artifacts**: Assess the presence of any visual artifacts, distortions, or glitches in the image. Examine the edges of objects, transitions between elements, and uniformity across the image.
+  6. **Realism and Naturalness**: Evaluate how realistic or natural the objects and scene in the image look in the context of its intent. Consider lighting, textures, proportions, and the plausibility of the scene.
+  7. **Composition and Layout**: Analyze the spatial arrangement, framing, and balance of elements in the image. Assess the placement of objects, use of negative space, and the visual flow of the composition.
+
+  ### Instructions:
+  For each dimension, generate **multiple specific and diverse questions** to guide a detailed evaluation of the image. Ensure that these questions cover different aspects, such as individual objects, relationships between elements, and the overall scene.
+
+  ### Output Format:
+  ```md
+  </Think>:...
+  
+  </Question list>:
+  1. **Question:** <Specific judgment question>  
+    **Dimension:** <The most relevant evaluation dimension>  
+    **Classification Reason:** <Provide a detailed explanation of why this dimension was selected>  
+    **Classification Confidence:** <Integer value between 1-10>  
+
+  2. **Question:** <Another specific judgment question>  
+    **Dimension:** <The most relevant evaluation dimension>  
+    **Classification Reason:** <Provide a detailed explanation of why this dimension was selected>  
+    **Classification Confidence:** <Integer value between 1-10> 
+  
+  Example Output:
+  ```md
+  </Think>:...
+
+  </Question list>:
+  1. **Question:** Does the image include all the key objects explicitly mentioned in the prompt?  
+    **Dimension:** Semantic Accuracy  
+    **Classification Reason:** Ensuring that the image contains all key elements is essential to verify its alignment with the prompt.  
+    **Classification Confidence:** 10  
+
+  2. **Question:** Are the relationships between objects (e.g., spatial arrangement, interactions) consistent with the prompt's description?  
+    **Dimension:** Semantic Accuracy  
+    **Classification Reason:** Evaluating spatial relationships ensures that the image not only contains the objects but also reflects their correct relationships.  
+    **Classification Confidence:** 9  
+
+  3. **Question:** Are the textures and details of the foreground objects sharp and visually appealing?  
+    **Dimension:** Fineness of Detail  
+    **Classification Reason:** Sharpness and clarity in the foreground are critical for assessing the image's overall quality.  
+    **Classification Confidence:** 8  
+
+  4. **Question:** Does the background exhibit consistent detail and visual harmony with the foreground?  
+    **Dimension:** Coherence and Consistency  
+    **Classification Reason:** Ensuring that the foreground and background are visually coherent enhances the overall quality of the image.  
+    **Classification Confidence:** 9  
+
+  5. **Question:** Are there any noticeable artifacts, distortions, or glitches around object edges or transitions?  
+    **Dimension:** Elimination of Artifacts  
+    **Classification Reason:** Checking for artifacts ensures that the technical quality of the image meets acceptable standards.  
+    **Classification Confidence:** 10  
+  ```
+  Now, the prompt is as following:
+  Prompt:{locPrompt}
+
+
+filter-prompt: |
+  filter-prompt: |
+  You are a highly skilled prompt engineer and evaluator specializing in analyzing and prioritizing questions related to image quality assessment. Your task is to evaluate the provided **Question List** (a string of questions focused on assessing image quality) and determine the **importance** of each question for evaluating image quality and human perception. You will assign an **importance score** on a scale of **1 to 5** for each question, along with a detailed explanation of your reasoning.
+
+  ### **Importance Scale Definitions**:
+  1. **Not Important**: The question has little to no relevance to assessing image quality or human perception (e.g., overly specific, redundant, or irrelevant to the broader evaluation of quality).
+  2. **Slightly Important**: The question is somewhat relevant but has limited impact on overall image evaluation or human perceptual alignment.
+  3. **Moderately Important**: The question is relevant and contributes to the evaluation, but it is not critical for assessing image quality or human perception.
+  4. **Important**: The question is highly relevant and has a strong impact on evaluating image quality and aligning with human perception.
+  5. **Very Important**: The question is essential for assessing image quality and human perception. It addresses a fundamental aspect of the image's quality or its alignment with human expectations.
+
+  ### **Instructions**:
+  1. **Iterate through All Questions**: Evaluate **each question individually** from the provided QSLST (Question List). **Every single question must be analyzed**, even if it seems repetitive or irrelevant. Do not skip or combine questions under any circumstances.
+  2. **Preserve Output Format**: Strictly follow the specified output format. Ensure that:
+     - Each question is labeled with the exact structure: `- **Question**: <The question from QSLST>`.
+     - Each question includes both an **Importance Score** and a **Reasoning** subsection.
+     - Formatting must remain consistent for all questions, without any deviation.
+  3. **Assign an Importance Score**: For each question, assign an importance score from **1 to 5** based on its relevance to image quality and human perception.
+  4. **Provide Detailed Reasoning**: For each question, explain why the assigned score was selected. Reference specific aspects of the question that make it more or less important.
+  5. **Verify Completeness**: At the end of your analysis, verify and confirm that every question from the provided QSLST has been evaluated and included in the output.
+
+  ### **Output Format**:
+  ```md
+  <\Analysis>:...
+  <\End of Analysis>
+
+  <\Question Rating list>:
+  - **Question**: <The question from QSLST>
+    - Importance Score: <1/2/3/4/5>
+    - Reasoning: <Detailed explanation of why this score was assigned, referencing the question's relevance and impact on image quality and human perception.>
+  - **Question**: <The question from QSLST>
+    - Importance Score: <1/2/3/4/5>
+    - Reasoning: <Detailed explanation of why this score was assigned, referencing the question's relevance and impact on image quality and human perception.>
+  <\End of Question Rating list>
+  ```
+
+  Now, your input Question List is: {locQslst}
+
+
+eval-prompt-old: |
+  You are a highly skilled assistant specializing in **comparative evaluation** of two generated images by prompt `{locPrompt}`, against predefined principles. Your task is to assess **which image performs better** for each principle from the list below: `{locQSLST}`. For each principle, you must compare the images and categorize the difference into **one of five levels**:
+  
+  ### **Comparison Levels**:
+  1. **1 >> 2 (Image 1 is significantly better)**: Image 1 performs far better than Image 2 in satisfying this principle. The difference is highly noticeable and impactful.
+  2. **1 > 2 (Image 1 is slightly better)**: Image 1 performs better than Image 2, but the difference is minor or subtle.
+  3. **1 = 2 (Tie)**: Both images perform equally well (or poorly) in satisfying this principle, with no meaningful difference between them.
+  4. **1 < 2 (Image 2 is slightly better)**: Image 2 performs better than Image 1, but the difference is minor or subtle.
+  5. **1 << 2 (Image 2 is significantly better)**: Image 2 performs far better than Image 1 in satisfying this principle. The difference is highly noticeable and impactful.
+  
+  ### Instructions:
+  1. **Iterate through All Principles**: Evaluate **each principle individually** and provide a structured analysis for each one. Do not skip or combine principles.
+  2. **Preserve Output Format**: Strictly follow the specified output format. Ensure that:
+     - Each Principle is labeled with the exact structure: `- **Principle**: <Name of Principle from Principle List>`.
+     - Each Principle includes both an **Comparison Level:** and a **Reasoning** subsection.
+     - Each **Comparison Level:** subsection is the exact structure: `- **Comparison Level**:  <1 >> 2 / 1 > 2 / 1 = 2 / 1 < 2 / 1 << 2>`.
+     - Formatting must remain consistent for all Principles, without any deviation.
+  3. **Provide Detailed Reasoning**: For every principle, explain the specific elements of the image that contribute to its rating, referencing examples from the image where possible.
+  4. **Verify Completeness**: At the end of your comparison, verify and confirm that every question from the provided principle list has been evaluated and included in the output.
+
+
+  ### Output Format:
+  ```md
+  <\Analysis>:...
+  <\End of Analysis>
+
+  <\Principle Comparison list>:
+  - **Principle**: <Name of principle>
+    - **Comparison Level**: <1 >> 2 / 1 > 2 / 1 = 2 / 1 < 2 / 1 << 2>
+    - **Reasoning**: <Detailed explanation of why this comparison level was assigned, referencing specific strengths or weaknesses in both images.>
+  
+  - **Principle**: <Name of principle>
+    - **Comparison Level**: <1 >> 2 / 1 > 2 / 1 = 2 / 1 < 2 / 1 << 2>
+    - **Reasoning**: <Detailed explanation of why this comparison level was assigned, referencing specific strengths or weaknesses in both images.>
+  <\End of Principle Comparison list>:
+  ```
+
+eval-prompt-o: |
+  You are an expert assistant specializing in the **comparative evaluation** of two generated images based on the prompt `{locPrompt}` and a set of predefined principles. Your task is to determine **which image performs better** for each principle listed in `{locQSLST}`. For every principle, you must compare the images and classify the difference into **one of five levels**:
+
+  ### **Comparison Levels**:
+  1. **1 >> 2 (Image 1 is significantly better)**: Image 1 far outperforms Image 2 in meeting this principle. The difference is highly noticeable and has a significant impact.
+  2. **1 > 2 (Image 1 is slightly better)**: Image 1 is better than Image 2, but the difference is minor or subtle.
+  3. **1 = 2 (Tie)**: Both images perform equally (or poorly) in satisfying this principle, with no meaningful differences between them.
+  4. **1 < 2 (Image 2 is slightly better)**: Image 2 is better than Image 1, but the difference is minor or subtle.
+  5. **1 << 2 (Image 2 is significantly better)**: Image 2 far outperforms Image 1 in meeting this principle. The difference is highly noticeable and has a significant impact.
+
+  ### Instructions:
+  1. **Evaluate Each Principle Individually**: Go through **each principle in the list**, i.e. `{locQSLST}` and provide a structured analysis. Do not skip or combine any principles.
+  2. **Maintain the Output Format**: Follow the specified output format carefully. Ensure:
+    - Each principle is labeled with the structure: `- **Principle**: <Name of Principle from Principle List>`.
+    - Each principle includes a **Comparison Level** and a **Reasoning** subsection.
+    - The **Comparison Level** subsection follows the exact format: `- **Comparison Level**: <1 >> 2 / 1 > 2 / 1 = 2 / 1 < 2 / 1 << 2>`.
+    - Formatting remains consistent for all principles without deviation.
+  3. **Provide Clear and Detailed Reasoning**: For each principle, explain the specific aspects of the images that justify the assigned comparison level. Reference concrete examples from the images whenever possible.
+  4. **Ensure Completeness**: After completing your comparison, confirm that every principle from the provided list has been evaluated and included in the output.
+  5. **保证所有的principle都来自list并且完全覆盖 而不是自己随便生成的
+  ### Output Format:
+  ```md
+  <\Analysis>:...
+  <\End of Analysis>
+
+  <\Principle Comparison List>:
+  - **Principle**: <Name of Principle>
+    - **Comparison Level**: <1 >> 2 / 1 > 2 / 1 = 2 / 1 < 2 / 1 << 2>
+    - **Reasoning**: <Detailed explanation of why this comparison level was assigned, referencing specific strengths or weaknesses in both images.>
+
+  - **Principle**: <Name of Principle>
+    - **Comparison Level**: <1 >> 2 / 1 > 2 / 1 = 2 / 1 < 2 / 1 << 2>
+    - **Reasoning**: <Detailed explanation of why this comparison level was assigned, referencing specific strengths or weaknesses in both images.>
+  <\End of Principle Comparison List>:
+
+  Now, the Principle list is {locQSLST}
+  ```
+
+eval-prompt: |
+  You are an expert assistant specializing in the **comparative evaluation** of two generated images based on the prompt `{locPrompt}` and a predefined list of principles. The provided image is structured such that the **left part represents Image 1** and the **right part represents Image 2**. Your task is to determine **which image performs better** for each principle in `{locQSLST}`. For each principle, start your evaluation with **`Principle:`**, followed by the **name of the principle**. Then, compare the images and classify the differences into **one of five levels**, strictly adhering to the required format. 
+
+  ### **Comparison Levels**:
+  1. **1 >> 2** (Image 1 is significantly better): Image 1 far outperforms Image 2 in satisfying this principle. The difference is highly noticeable and has a significant impact.  
+  2. **1 > 2** (Image 1 is slightly better): Image 1 performs better than Image 2, but the difference is minor or subtle.  
+  3. **1 = 2** (Tie): Both images perform equally well (or poorly) in satisfying this principle, with no meaningful differences between them.  
+  4. **1 < 2** (Image 2 is slightly better): Image 2 performs better than Image 1, but the difference is minor or subtle.  
+  5. **1 << 2** (Image 2 is significantly better): Image 2 far outperforms Image 1 in satisfying this principle. The difference is highly noticeable and has a significant impact.
+
+  ### Instructions:
+  1. **Understand the Image Structure**: The input image is divided into two sections:
+    - **Left part = Image 1**  
+    - **Right part = Image 2**  
+
+  2. **Evaluate Each Principle Individually**: Analyze **each principle in the list `{locQSLST}`** one by one, and provide a structured and thorough analysis for each.  
+    - For each principle, begin with `Principle: <Name of Principle>`.  
+    - Do not skip or combine principles.  
+    - Ensure that the **Comparison Level** strictly adheres to the format `1 >> 2 / 1 > 2 / 1 = 2 / 1 < 2 / 1 << 2`.  
+    - **Reversed formats like `2 >> 1` or `2 > 1` are not allowed.**  
+
+  3. **Provide Clear and Detailed Reasoning**: For each principle, explain the specific aspects of the images that justify the assigned comparison level. Reference concrete strengths or weaknesses in both images (e.g., object details, colors, textures, etc.).  
+
+  4. **Ensure Completeness**: Verify that every principle from the provided list `{locQSLST}` has been evaluated and included in the output. Do not generate or analyze principles beyond those in `{locQSLST}`.  
+
+  ### Output Format:
+  ```md
+  <\Analysis>:...
+  <\End of Analysis>
+
+  <\Principle Comparison List>:
+  - Principle: <Name of Principle>
+    - Comparison Level: <1 >> 2 / 1 > 2 / 1 = 2 / 1 < 2 / 1 << 2>
+    - Reasoning: <Detailed explanation of why this comparison level was assigned, referencing specific strengths or weaknesses in both images.>
+
+  - Principle: <Name of Principle>
+    - Comparison Level: <1 >> 2 / 1 > 2 / 1 = 2 / 1 < 2 / 1 << 2>
+    - Reasoning: <Detailed explanation of why this comparison level was assigned, referencing specific strengths or weaknesses in both images.>
+  <\End of Principle Comparison List>:

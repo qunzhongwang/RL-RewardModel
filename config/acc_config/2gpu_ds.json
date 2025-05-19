@@ -1,0 +1,8 @@
+{
+    "distributed_type": "DEEPSPEED",
+    "mixed_precision": "bf16",        
+    "num_processes": 2,        
+    "num_machines": 1,       
+    "machine_rank": 0,        
+    "use_cpu": false
+}

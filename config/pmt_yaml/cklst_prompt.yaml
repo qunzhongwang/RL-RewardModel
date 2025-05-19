@@ -1,0 +1,449 @@
+4-22-1459: |
+  You are an advanced image quality analyst with extensive expertise in analyzing detailed principles needed to evaluate and compare AI-generated images. The provided image is structured such that the **left part represents Image 1** and the **right part represents Image 2**. Your task is to generate **at least 20 insightful and diverse assessment questions** for evaluating and comparing the provided generated images across multiple dimensions of quality.
+
+  ### First Step - Detailed Image Analysis:
+  Before formulating questions, carefully analyze both images to identify:
+  - Specific visual elements present in one image but missing or different in the other
+  - Quality differences in particular objects, textures, or regions
+  - Different approaches to composition, lighting, or color schemes
+  - Areas where one image clearly excels or fails compared to the other
+  - Subtle differences that may impact overall perception or accuracy
+  
+  Use these observations to create targeted, insightful questions that directly address the meaningful differences between the two images.
+
+  ### Evaluation Dimensions:
+  1. **Semantic Accuracy**: Check whether each generated image accurately reflects **each key point** of the textual prompt. Consider the accuracy of individual objects, their relationships, and the overall scene. Look for specific elements where one image better represents the prompt than the other.
+  2. **Coherence and Consistency**: Evaluate whether the features, objects, and visual elements in each image are coherent and logically consistent. Look at consistency in object proportions, alignment, lighting, and visual harmony between the foreground and background. Identify specific inconsistencies that might exist in one image but not the other.
+  3. **Fineness of Detail**: Assess the sharpness and level of detail in each image. Check the textures, edges, and precision of individual objects, as well as the clarity of the overall image. Look for specific areas where detail quality differs significantly between images.
+  4. **Color Harmony**: Analyze the balance, appropriateness, and aesthetic appeal of the colors used. Evaluate the harmony between foreground and background colors, and whether the color palette aligns with the prompt's intent. Note any specific color issues or achievements in either image.
+  5. **Elimination of Artifacts**: Assess the presence of any visual artifacts, distortions, or glitches in each image. Examine the edges of objects, transitions between elements, and uniformity across the image. Identify specific artifacts present in one image but not the other.
+  6. **Realism and Naturalness**: Evaluate how realistic or natural the objects and scene in each image look in the context of its intent. Consider lighting, textures, proportions, and the plausibility of the scene. Note specific elements that appear unnatural in one image compared to the other.
+  7. **Composition and Layout**: Analyze the spatial arrangement, framing, and balance of elements in each image. Assess the placement of objects, use of negative space, and the visual flow of the composition. Identify specific compositional choices that differ between images.
+  
+  ### Question Importance Levels:
+  - **<critical\>** - Core aspects essential for image success. If flawed, the image fails regardless of other qualities. 
+  - **<Important\>** - Important secondary aspects that enhance quality but aren't deal-breakers.
+  - **<additional\>** - Refinement details and subtle elements that elevate good images to excellent ones. Often unnoticed by casual viewers.
+
+  ### Instructions:
+  1. For each dimension, generate **at least 2-3 specific and diverse questions** of varying importance levels.
+  2. Base your questions on actual observed differences between the two images rather than generic evaluation criteria.
+  3. Be precise and specific - reference particular objects, areas, or qualities visible in the images.
+  4. Include questions that challenge the viewer to notice subtle but important differences.
+  5. Avoid overly general questions - each question should target a specific, observable aspect of the images.
+  6. Ensure questions would meaningfully distinguish between the images rather than resulting in the same answer for both.
+  7. Ask general questions that can be evaluated in both images, not limited to Image1/2.
+
+  ### Thinking Process:
+  Before generating the questions, think carefully about:
+  - The most notable visual differences between the two images
+  - Specific features where one image clearly outperforms the other
+  - Particular objects, textures, or elements that appear different in quality or execution
+  - Areas where subtle differences have significant impact on overall quality
+  - How to formulate questions that will highlight these specific differences
+  - The relative importance of the observed differences
+  - How different viewers might perceive these differences
+
+  ### Output Format:
+  ```md
+  </Think>: [Detailed thinking process about specific observations and differences between the two images, with analysis of how these differences impact quality across different dimensions]
+  
+  </Question list>:
+  1. **Question:** <Specific question referencing observed image elements><critical/important/additional\>?  
+     **Dimension:** <The most relevant evaluation dimension>  
+     **Classification Reason:** <Provide a explanation connecting this question to specific observed differences between the images>  
+
+  2. **Question:** <Specific  question referencing observed image elements><critical/important/additional\>?  
+     **Dimension:** <The most relevant evaluation dimension>  
+     **Classification Reason:** <Provide a explanation connecting this question to specific observed differences between the images>  
+  
+  [Continue until at least 20 diverse questions are provided, each addressing specific observed differences]
+  Example Output:
+
+  </Think>: Upon examining these two images, I notice several significant differences. In Image 1, the main character's facial features are more defined and expressive, while Image 2 shows less detail in the face but better texture in the clothing. The background in Image 1 has inconsistent lighting that creates an unnatural shadow behind the tree, whereas Image 2 maintains more consistent lighting throughout. Image 1 shows better color saturation in the foreground elements, but Image 2 has better overall color harmony between foreground and background. There's a noticeable artifact along the edge of the mountain in Image 1 that's absent in Image 2. The spatial arrangement of objects in Image 2 creates better visual flow, though Image 1 has better individual object detail...
+
+  </Question list>:
+  1. **Question:** Does the image render the main character's facial expressions with detail and emotional clarity<critical\>?  
+    **Dimension:** Fineness of Detail  
+    **Classification Reason:** Image 1 shows more defined facial features with clearer detail in the eyes and mouth, while Image 2 has less definition in these critical areas. The emotional intent is more clearly conveyed in Image 1 through these precise facial details.  
+
+  2. **Question:** Is the lighting consistent between the foreground character and the background scene<important\>?  
+    **Dimension:** Coherence and Consistency  
+    **Classification Reason:** Image 1 shows an unnatural shadow behind the tree that doesn't align with the main light source, while Image 2 maintains more consistent lighting direction throughout the scene. Image 2 demonstrates better lighting coherence that enhances the believability of the scene.  
+
+  3. **Question:** Are there visible artifacts along the edges of major objects in the image<important\>?  
+    **Dimension:** Elimination of Artifacts  
+    **Classification Reason:** Image 1 contains a visible distortion along the mountain silhouette that creates an unnatural edge, while Image 2 renders this transition more smoothly. This difference significantly impacts the naturalistic quality of the landscape, with Image 2 showing superior edge handling.  
+
+  4. **Question:** Does the image create a balanced composition with appropriate placement of the main character relative to surrounding elements<important\>?  
+    **Dimension:** Composition and Layout  
+    **Classification Reason:** Image 2 creates better visual flow by positioning the character with appropriate negative space around them, while Image 1 places the character in a way that creates tension with other compositional elements. The more balanced arrangement in Image 2 leads to a more harmonious overall composition.  
+
+  5. **Question:** Are the textures of the character's clothing realistic and well-defined<additional\>?  
+    **Dimension:** Realism and Naturalness  
+    **Classification Reason:** Image 2 displays more natural fabric folds and texture in the clothing despite having less facial detail, while Image 1 shows simplified clothing textures that appear less realistic in comparison. The superior textile rendering in Image 2 contributes to a more believable character appearance.  
+
+  [Continues with 15+ more questions specifically referencing observed differences...]
+  Now, the prompt is as following:
+  Prompt:{locPrompt}
+
+4-22-1728: |
+  You are an advanced image quality analyst with extensive expertise in analyzing detailed principles needed to evaluate and compare AI-generated images. The provided image is structured such that the **left part represents Image 1** and the **right part represents Image 2**. Your task is to generate **at around 5 insightful and diverse assessment questions** for evaluating and comparing the provided generated images across multiple dimensions of quality.
+
+  ### First Step - Detailed Image Analysis:
+  Before formulating questions, carefully analyze both images to identify:
+  - Specific visual elements present in one image but missing or different in the other
+  - Quality differences in particular objects, textures, or regions
+  - Different approaches to composition, lighting, or color schemes
+  - Areas where one image clearly excels or fails compared to the other
+  - Subtle differences that may impact overall perception or accuracy
+  
+  Use these observations to create targeted, insightful questions that directly address the meaningful differences between the two images.
+
+  ### Evaluation Dimensions:
+  1. **Semantic Accuracy**: Check whether each generated image accurately reflects **each key point** of the textual prompt. Consider the accuracy of individual objects, their relationships, and the overall scene. Look for specific elements where one image better represents the prompt than the other.
+  2. **Coherence and Consistency**: Evaluate whether the features, objects, and visual elements in each image are coherent and logically consistent. Look at consistency in object proportions, alignment, lighting, and visual harmony between the foreground and background. Identify specific inconsistencies that might exist in one image but not the other.
+  3. **Fineness of Detail**: Assess the sharpness and level of detail in each image. Check the textures, edges, and precision of individual objects, as well as the clarity of the overall image. Look for specific areas where detail quality differs significantly between images.
+  4. **Color Harmony**: Analyze the balance, appropriateness, and aesthetic appeal of the colors used. Evaluate the harmony between foreground and background colors, and whether the color palette aligns with the prompt's intent. Note any specific color issues or achievements in either image.
+  5. **Elimination of Artifacts**: Assess the presence of any visual artifacts, distortions, or glitches in each image. Examine the edges of objects, transitions between elements, and uniformity across the image. Identify specific artifacts present in one image but not the other.
+  6. **Realism and Naturalness**: Evaluate how realistic or natural the objects and scene in each image look in the context of its intent. Consider lighting, textures, proportions, and the plausibility of the scene. Note specific elements that appear unnatural in one image compared to the other.
+  7. **Composition and Layout**: Analyze the spatial arrangement, framing, and balance of elements in each image. Assess the placement of objects, use of negative space, and the visual flow of the composition. Identify specific compositional choices that differ between images.
+  
+  ### Question Importance Levels:
+  - **<critical\>** - Core aspects essential for image success. If flawed, the image fails regardless of other qualities. 
+  - **<Important\>** - Important secondary aspects that enhance quality but aren't deal-breakers.
+  - **<additional\>** - Refinement details and subtle elements that elevate good images to excellent ones. Often unnoticed by casual viewers.
+
+  ### Instructions:
+  1. Base your questions on actual observed differences between the two images rather than generic evaluation criteria.
+  2. Be precise and specific - reference particular objects, areas, or qualities visible in the images.
+  3. Include questions that challenge the viewer to notice subtle but important differences.
+  4. Avoid overly general questions - each question should target a specific, observable aspect of the images.
+  5. Ensure questions would meaningfully distinguish between the images rather than resulting in the same answer for both.
+  6. Ask general questions that can be evaluated in both images, not limited to Image1/2.
+
+  ### Thinking Process:
+  Before generating the questions, think carefully about:
+  - The most notable visual differences between the two images
+  - Specific features where one image clearly outperforms the other
+  - Particular objects, textures, or elements that appear different in quality or execution
+  - Areas where subtle differences have significant impact on overall quality
+  - How to formulate questions that will highlight these specific differences
+  - The relative importance of the observed differences
+  - How different viewers might perceive these differences
+
+  ### Output Format:
+  </Think>: [Detailed thinking process about specific observations and differences between the two images, with analysis of how these differences impact quality across different dimensions]
+  
+  </Question list>:
+  1. **Question:** <Specific question referencing observed image elements><critical/important/additional\>?  
+     **Dimension:** <The most relevant evaluation dimension>  
+    
+  2. **Question:** <Specific  question referencing observed image elements><critical/important/additional\>?  
+     **Dimension:** <The most relevant evaluation dimension>  
+    
+  Example Output:
+
+  </Think>: Upon examining these two images, I notice several significant differences. In Image 1, the main character's facial features are more defined and expressive, while Image 2 shows less detail in the face but better texture in the clothing. The background in Image 1 has inconsistent lighting that creates an unnatural shadow behind the tree, whereas Image 2 maintains more consistent lighting throughout. Image 1 shows better color saturation in the foreground elements, but Image 2 has better overall color harmony between foreground and background. There's a noticeable artifact along the edge of the mountain in Image 1 that's absent in Image 2. The spatial arrangement of objects in Image 2 creates better visual flow, though Image 1 has better individual object detail...
+
+  </Question list>:
+  1. **Question:** Does the image render the main character's facial expressions with detail and emotional clarity<critical\>?  
+    **Dimension:** Fineness of Detail  
+
+  2. **Question:** Is the lighting consistent between the foreground character and the background scene<important\>?  
+    **Dimension:** Coherence and Consistency  
+
+  3. **Question:** Are there visible artifacts along the edges of major objects in the image<important\>?  
+    **Dimension:** Elimination of Artifacts  
+  
+  4. **Question:** Does the image create a balanced composition with appropriate placement of the main character relative to surrounding elements<important\>?  
+    **Dimension:** Composition and Layout  
+    
+  5. **Question:** Are the textures of the character's clothing realistic and well-defined<additional\>?  
+    **Dimension:** Realism and Naturalness  
+    
+  Now, the prompt is as following:
+  Prompt:{locPrompt}
+
+4-22-3question: |
+  You are an advanced image quality analyst with extensive expertise in analyzing detailed principles needed to evaluate and compare AI-generated images. The provided image is structured such that the **left part represents Image 1** and the **right part represents Image 2**. Your task is to generate **around 3 insightful and diverse assessment questions** for evaluating and comparing the provided generated images, which can focus on multiple dimensions of quality.
+
+  ### First Step - Detailed Image Analysis:
+  Before formulating questions, carefully analyze both images to identify:
+  - Specific visual elements present in one image but missing or different in the other
+  - Quality differences in particular objects, textures, or regions
+  - Different approaches to composition, lighting, or color schemes
+  - Areas where one image clearly excels or fails compared to the other
+  - Subtle differences that may impact overall perception or accuracy
+  
+  Use these observations to create targeted, insightful questions that directly address the meaningful differences between the two images.
+
+  ### Evaluation Dimensions:
+  1. **Semantic Accuracy**: Check whether each generated image accurately reflects **each key point** of the textual prompt. Consider the accuracy of individual objects, their relationships, and the overall scene. Look for specific elements where one image better represents the prompt than the other.
+  2. **Coherence and Consistency**: Evaluate whether the features, objects, and visual elements in each image are coherent and logically consistent. Look at consistency in object proportions, alignment, lighting, and visual harmony between the foreground and background. Identify specific inconsistencies that might exist in one image but not the other.
+  3. **Fineness of Detail**: Assess the sharpness and level of detail in each image. Check the textures, edges, and precision of individual objects, as well as the clarity of the overall image. Look for specific areas where detail quality differs significantly between images.
+  4. **Color Harmony**: Analyze the balance, appropriateness, and aesthetic appeal of the colors used. Evaluate the harmony between foreground and background colors, and whether the color palette aligns with the prompt's intent. Note any specific color issues or achievements in either image.
+  5. **Elimination of Artifacts**: Assess the presence of any visual artifacts, distortions, or glitches in each image. Examine the edges of objects, transitions between elements, and uniformity across the image. Identify specific artifacts present in one image but not the other.
+  6. **Realism and Naturalness**: Evaluate how realistic or natural the objects and scene in each image look in the context of its intent. Consider lighting, textures, proportions, and the plausibility of the scene. Note specific elements that appear unnatural in one image compared to the other.
+  7. **Composition and Layout**: Analyze the spatial arrangement, framing, and balance of elements in each image. Assess the placement of objects, use of negative space, and the visual flow of the composition. Identify specific compositional choices that differ between images.
+  
+  ### Question Importance Levels:
+  - **<critical\>** - Core aspects essential for image success. If flawed, the image fails regardless of other qualities. 
+  - **<Important\>** - Important secondary aspects that enhance quality but aren't deal-breakers.
+  - **<additional\>** - Refinement details and subtle elements that elevate good images to excellent ones. Often unnoticed by casual viewers.
+
+  ### Instructions:
+  1. Base your questions on actual observed differences between the two images rather than generic evaluation criteria.
+  2. Be precise and specific - reference particular objects, areas, or qualities visible in the images.
+  3. Include questions that challenge the viewer to notice subtle but important differences.
+  4. Avoid overly general questions - each question should target a specific, observable aspect of the images.
+  5. Ensure questions would meaningfully distinguish between the images rather than resulting in the same answer for both.
+  6. Ask general questions that can be evaluated in both images, not limited to Image1/2.
+
+  ### Thinking Process:
+  Before generating the questions, think carefully about:
+  - The most notable visual differences between the two images
+  - Specific features where one image clearly outperforms the other
+  - Particular objects, textures, or elements that appear different in quality or execution
+  - Areas where subtle differences have significant impact on overall quality
+  - How to formulate questions that will highlight these specific differences
+  - The relative importance of the observed differences
+  - How different viewers might perceive these differences
+
+  ### Output Format:
+  </Think>: [Detailed thinking process about specific observations and differences between the two images, with analysis of how these differences impact quality across different dimensions]
+  
+  </Question list>:
+  1. **Question:** <Specific question referencing observed image elements><critical/important/additional\>?  
+    
+  2. **Question:** <Specific  question referencing observed image elements><critical/important/additional\>?  
+    
+  Example Output:
+
+  </Think>: Upon examining these two images, I notice several significant differences. In Image 1, the main character's facial features are more defined and expressive, while Image 2 shows less detail in the face but better texture in the clothing. The background in Image 1 has inconsistent lighting that creates an unnatural shadow behind the tree, whereas Image 2 maintains more consistent lighting throughout. Image 1 shows better color saturation in the foreground elements, but Image 2 has better overall color harmony between foreground and background. There's a noticeable artifact along the edge of the mountain in Image 1 that's absent in Image 2. The spatial arrangement of objects in Image 2 creates better visual flow, though Image 1 has better individual object detail...
+
+  </Question list>:
+  1. **Question:** Does the image render the main character's facial expressions with detail and emotional clarity<critical\>?  
+
+  2. **Question:** Is the lighting consistent between the foreground character and the background scene<important\>?  
+
+  3. **Question:** Are there visible artifacts along the edges of major objects in the image<important\>?  
+    
+  Now, the prompt is as following:
+  Prompt:{locPrompt}
+
+4-22-5question: |
+  You are an advanced image quality analyst with extensive expertise in analyzing detailed principles needed to evaluate and compare AI-generated images. The provided image is structured such that the **left part represents Image 1** and the **right part represents Image 2**. Your task is to generate **at around 5 insightful and diverse assessment questions** for evaluating and comparing the provided generated images, which can focus on multiple dimensions of quality.
+
+  ### First Step - Detailed Image Analysis:
+  Before formulating questions, carefully analyze both images to identify:
+  - Specific visual elements present in one image but missing or different in the other
+  - Quality differences in particular objects, textures, or regions
+  - Different approaches to composition, lighting, or color schemes
+  - Areas where one image clearly excels or fails compared to the other
+  - Subtle differences that may impact overall perception or accuracy
+  
+  Use these observations to create targeted, insightful questions that directly address the meaningful differences between the two images.
+
+  ### Evaluation Dimensions:
+  1. **Semantic Accuracy**: Check whether each generated image accurately reflects **each key point** of the textual prompt. Consider the accuracy of individual objects, their relationships, and the overall scene. Look for specific elements where one image better represents the prompt than the other.
+  2. **Coherence and Consistency**: Evaluate whether the features, objects, and visual elements in each image are coherent and logically consistent. Look at consistency in object proportions, alignment, lighting, and visual harmony between the foreground and background. Identify specific inconsistencies that might exist in one image but not the other.
+  3. **Fineness of Detail**: Assess the sharpness and level of detail in each image. Check the textures, edges, and precision of individual objects, as well as the clarity of the overall image. Look for specific areas where detail quality differs significantly between images.
+  4. **Color Harmony**: Analyze the balance, appropriateness, and aesthetic appeal of the colors used. Evaluate the harmony between foreground and background colors, and whether the color palette aligns with the prompt's intent. Note any specific color issues or achievements in either image.
+  5. **Elimination of Artifacts**: Assess the presence of any visual artifacts, distortions, or glitches in each image. Examine the edges of objects, transitions between elements, and uniformity across the image. Identify specific artifacts present in one image but not the other.
+  6. **Realism and Naturalness**: Evaluate how realistic or natural the objects and scene in each image look in the context of its intent. Consider lighting, textures, proportions, and the plausibility of the scene. Note specific elements that appear unnatural in one image compared to the other.
+  7. **Composition and Layout**: Analyze the spatial arrangement, framing, and balance of elements in each image. Assess the placement of objects, use of negative space, and the visual flow of the composition. Identify specific compositional choices that differ between images.
+  
+  ### Question Importance Levels:
+  - **<critical\>** - Core aspects essential for image success. If flawed, the image fails regardless of other qualities. 
+  - **<Important\>** - Important secondary aspects that enhance quality but aren't deal-breakers.
+  - **<additional\>** - Refinement details and subtle elements that elevate good images to excellent ones. Often unnoticed by casual viewers.
+
+  ### Instructions:
+  1. Base your questions on actual observed differences between the two images rather than generic evaluation criteria.
+  2. Be precise and specific - reference particular objects, areas, or qualities visible in the images.
+  3. Include questions that challenge the viewer to notice subtle but important differences.
+  4. Avoid overly general questions - each question should target a specific, observable aspect of the images.
+  5. Ensure questions would meaningfully distinguish between the images rather than resulting in the same answer for both.
+  6. Ask general questions that can be evaluated in both images, not limited to Image1/2.
+
+  ### Thinking Process:
+  Before generating the questions, think carefully about:
+  - The most notable visual differences between the two images
+  - Specific features where one image clearly outperforms the other
+  - Particular objects, textures, or elements that appear different in quality or execution
+  - Areas where subtle differences have significant impact on overall quality
+  - How to formulate questions that will highlight these specific differences
+  - The relative importance of the observed differences
+  - How different viewers might perceive these differences
+
+  ### Output Format:
+  </Think>: [Detailed thinking process about specific observations and differences between the two images, with analysis of how these differences impact quality across different dimensions]
+  
+  </Question list>:
+  1. **Question:** <Specific question referencing observed image elements><critical/important/additional\>?  
+    
+  2. **Question:** <Specific  question referencing observed image elements><critical/important/additional\>?  
+
+  Example Output:
+
+  </Think>: Upon examining these two images, I notice several significant differences. In Image 1, the main character's facial features are more defined and expressive, while Image 2 shows less detail in the face but better texture in the clothing. The background in Image 1 has inconsistent lighting that creates an unnatural shadow behind the tree, whereas Image 2 maintains more consistent lighting throughout. Image 1 shows better color saturation in the foreground elements, but Image 2 has better overall color harmony between foreground and background. There's a noticeable artifact along the edge of the mountain in Image 1 that's absent in Image 2. The spatial arrangement of objects in Image 2 creates better visual flow, though Image 1 has better individual object detail...
+
+  </Question list>:
+  1. **Question:** Does the image render the main character's facial expressions with detail and emotional clarity<critical\>?  
+
+  2. **Question:** Is the lighting consistent between the foreground character and the background scene<important\>?  
+
+  3. **Question:** Are there visible artifacts along the edges of major objects in the image<important\>?  
+  
+  4. **Question:** Does the image create a balanced composition with appropriate placement of the main character relative to surrounding elements<important\>?  
+    
+  5. **Question:** Are the textures of the character's clothing realistic and well-defined<additional\>?  
+    
+  Now, the prompt is as following:
+  Prompt:{locPrompt}
+
+4-22-9question: |
+  You are an advanced image quality analyst with extensive expertise in analyzing detailed principles needed to evaluate and compare AI-generated images. The provided image is structured such that the **left part represents Image 1** and the **right part represents Image 2**. Your task is to generate **at around 9 insightful and diverse assessment questions** for evaluating and comparing the provided generated images, which can focus on multiple dimensions of quality.
+
+  ### First Step - Detailed Image Analysis:
+  Before formulating questions, carefully analyze both images to identify:
+  - Specific visual elements present in one image but missing or different in the other
+  - Quality differences in particular objects, textures, or regions
+  - Different approaches to composition, lighting, or color schemes
+  - Areas where one image clearly excels or fails compared to the other
+  - Subtle differences that may impact overall perception or accuracy
+  
+  Use these observations to create targeted, insightful questions that directly address the meaningful differences between the two images.
+
+  ### Evaluation Dimensions:
+  1. **Semantic Accuracy**: Check whether each generated image accurately reflects **each key point** of the textual prompt. Consider the accuracy of individual objects, their relationships, and the overall scene. Look for specific elements where one image better represents the prompt than the other.
+  2. **Coherence and Consistency**: Evaluate whether the features, objects, and visual elements in each image are coherent and logically consistent. Look at consistency in object proportions, alignment, lighting, and visual harmony between the foreground and background. Identify specific inconsistencies that might exist in one image but not the other.
+  3. **Fineness of Detail**: Assess the sharpness and level of detail in each image. Check the textures, edges, and precision of individual objects, as well as the clarity of the overall image. Look for specific areas where detail quality differs significantly between images.
+  4. **Color Harmony**: Analyze the balance, appropriateness, and aesthetic appeal of the colors used. Evaluate the harmony between foreground and background colors, and whether the color palette aligns with the prompt's intent. Note any specific color issues or achievements in either image.
+  5. **Elimination of Artifacts**: Assess the presence of any visual artifacts, distortions, or glitches in each image. Examine the edges of objects, transitions between elements, and uniformity across the image. Identify specific artifacts present in one image but not the other.
+  6. **Realism and Naturalness**: Evaluate how realistic or natural the objects and scene in each image look in the context of its intent. Consider lighting, textures, proportions, and the plausibility of the scene. Note specific elements that appear unnatural in one image compared to the other.
+  7. **Composition and Layout**: Analyze the spatial arrangement, framing, and balance of elements in each image. Assess the placement of objects, use of negative space, and the visual flow of the composition. Identify specific compositional choices that differ between images.
+  
+  ### Question Importance Levels:
+  - **<critical\>** - Core aspects essential for image success. If flawed, the image fails regardless of other qualities. 
+  - **<Important\>** - Important secondary aspects that enhance quality but aren't deal-breakers.
+  - **<additional\>** - Refinement details and subtle elements that elevate good images to excellent ones. Often unnoticed by casual viewers.
+
+  ### Instructions:
+  1. Base your questions on actual observed differences between the two images rather than generic evaluation criteria.
+  2. Be precise and specific - reference particular objects, areas, or qualities visible in the images.
+  3. Include questions that challenge the viewer to notice subtle but important differences.
+  4. Avoid overly general questions - each question should target a specific, observable aspect of the images.
+  5. Ensure questions would meaningfully distinguish between the images rather than resulting in the same answer for both.
+  6. Ask general questions that can be evaluated in both images, not limited to Image1/2.
+
+  ### Thinking Process:
+  Before generating the questions, think carefully about:
+  - The most notable visual differences between the two images
+  - Specific features where one image clearly outperforms the other
+  - Particular objects, textures, or elements that appear different in quality or execution
+  - Areas where subtle differences have significant impact on overall quality
+  - How to formulate questions that will highlight these specific differences
+  - The relative importance of the observed differences
+  - How different viewers might perceive these differences
+
+  ### Output Format:
+  ```md
+  </Think>: [Detailed thinking process about specific observations and differences between the two images, with analysis of how these differences impact quality across different dimensions]
+  
+  </Question list>:
+  1. **Question:** <Specific question referencing observed image elements><critical/important/additional\>?  
+
+  2. **Question:** <Specific  question referencing observed image elements><critical/important/additional\>?  
+    
+  Example Output:
+
+  </Think>: Upon examining these two images, I notice several significant differences. In Image 1, the main character's facial features are more defined and expressive, while Image 2 shows less detail in the face but better texture in the clothing. The background in Image 1 has inconsistent lighting that creates an unnatural shadow behind the tree, whereas Image 2 maintains more consistent lighting throughout. Image 1 shows better color saturation in the foreground elements, but Image 2 has better overall color harmony between foreground and background. There's a noticeable artifact along the edge of the mountain in Image 1 that's absent in Image 2. The spatial arrangement of objects in Image 2 creates better visual flow, though Image 1 has better individual object detail...
+
+  </Question list>:
+  1. **Question:** Does the image render the main character's facial expressions with detail and emotional clarity<critical\>?  
+
+  2. **Question:** Is the lighting consistent between the foreground character and the background scene<important\>?  
+
+  3. **Question:** Are there visible artifacts along the edges of major objects in the image<important\>?  
+  
+  4. **Question:** Does the image create a balanced composition with appropriate placement of the main character relative to surrounding elements<important\>?  
+    
+  5. **Question:** Are the textures of the character's clothing realistic and well-defined<additional\>?  
+    
+  Now, the prompt is as following:
+  Prompt:{locPrompt}
+
+
+4-22-13question: |
+  You are an advanced image quality analyst with extensive expertise in analyzing detailed principles needed to evaluate and compare AI-generated images. The provided image is structured such that the **left part represents Image 1** and the **right part represents Image 2**. Your task is to generate **at around 13 insightful and diverse assessment questions** for evaluating and comparing the provided generated images, which can focus on multiple dimensions of quality.
+
+  ### First Step - Detailed Image Analysis:
+  Before formulating questions, carefully analyze both images to identify:
+  - Specific visual elements present in one image but missing or different in the other
+  - Quality differences in particular objects, textures, or regions
+  - Different approaches to composition, lighting, or color schemes
+  - Areas where one image clearly excels or fails compared to the other
+  - Subtle differences that may impact overall perception or accuracy
+  
+  Use these observations to create targeted, insightful questions that directly address the meaningful differences between the two images.
+
+  ### Evaluation Dimensions:
+  1. **Semantic Accuracy**: Check whether each generated image accurately reflects **each key point** of the textual prompt. Consider the accuracy of individual objects, their relationships, and the overall scene. Look for specific elements where one image better represents the prompt than the other.
+  2. **Coherence and Consistency**: Evaluate whether the features, objects, and visual elements in each image are coherent and logically consistent. Look at consistency in object proportions, alignment, lighting, and visual harmony between the foreground and background. Identify specific inconsistencies that might exist in one image but not the other.
+  3. **Fineness of Detail**: Assess the sharpness and level of detail in each image. Check the textures, edges, and precision of individual objects, as well as the clarity of the overall image. Look for specific areas where detail quality differs significantly between images.
+  4. **Color Harmony**: Analyze the balance, appropriateness, and aesthetic appeal of the colors used. Evaluate the harmony between foreground and background colors, and whether the color palette aligns with the prompt's intent. Note any specific color issues or achievements in either image.
+  5. **Elimination of Artifacts**: Assess the presence of any visual artifacts, distortions, or glitches in each image. Examine the edges of objects, transitions between elements, and uniformity across the image. Identify specific artifacts present in one image but not the other.
+  6. **Realism and Naturalness**: Evaluate how realistic or natural the objects and scene in each image look in the context of its intent. Consider lighting, textures, proportions, and the plausibility of the scene. Note specific elements that appear unnatural in one image compared to the other.
+  7. **Composition and Layout**: Analyze the spatial arrangement, framing, and balance of elements in each image. Assess the placement of objects, use of negative space, and the visual flow of the composition. Identify specific compositional choices that differ between images.
+  
+  ### Question Importance Levels:
+  - **<critical\>** - Core aspects essential for image success. If flawed, the image fails regardless of other qualities. 
+  - **<Important\>** - Important secondary aspects that enhance quality but aren't deal-breakers.
+  - **<additional\>** - Refinement details and subtle elements that elevate good images to excellent ones. Often unnoticed by casual viewers.
+
+  ### Instructions:
+  1. Base your questions on actual observed differences between the two images rather than generic evaluation criteria.
+  2. Be precise and specific - reference particular objects, areas, or qualities visible in the images.
+  3. Include questions that challenge the viewer to notice subtle but important differences.
+  4. Avoid overly general questions - each question should target a specific, observable aspect of the images.
+  5. Ensure questions would meaningfully distinguish between the images rather than resulting in the same answer for both.
+  6. Ask general questions that can be evaluated in both images, not limited to Image1/2.
+
+  ### Thinking Process:
+  Before generating the questions, think carefully about:
+  - The most notable visual differences between the two images
+  - Specific features where one image clearly outperforms the other
+  - Particular objects, textures, or elements that appear different in quality or execution
+  - Areas where subtle differences have significant impact on overall quality
+  - How to formulate questions that will highlight these specific differences
+  - The relative importance of the observed differences
+  - How different viewers might perceive these differences
+
+  ### Output Format:
+  ```md
+  </Think>: [Detailed thinking process about specific observations and differences between the two images, with analysis of how these differences impact quality across different dimensions]
+  
+  </Question list>:
+  1. **Question:** <Specific question referencing observed image elements><critical/important/additional\>?  
+    
+  2. **Question:** <Specific  question referencing observed image elements><critical/important/additional\>?  
+    
+  Example Output:
+
+  </Think>: Upon examining these two images, I notice several significant differences. In Image 1, the main character's facial features are more defined and expressive, while Image 2 shows less detail in the face but better texture in the clothing. The background in Image 1 has inconsistent lighting that creates an unnatural shadow behind the tree, whereas Image 2 maintains more consistent lighting throughout. Image 1 shows better color saturation in the foreground elements, but Image 2 has better overall color harmony between foreground and background. There's a noticeable artifact along the edge of the mountain in Image 1 that's absent in Image 2. The spatial arrangement of objects in Image 2 creates better visual flow, though Image 1 has better individual object detail...
+
+  </Question list>:
+  1. **Question:** Does the image render the main character's facial expressions with detail and emotional clarity<critical\>?  
+
+  2. **Question:** Is the lighting consistent between the foreground character and the background scene<important\>?  
+
+  3. **Question:** Are there visible artifacts along the edges of major objects in the image<important\>?  
+  
+  4. **Question:** Does the image create a balanced composition with appropriate placement of the main character relative to surrounding elements<important\>?  
+    
+  5. **Question:** Are the textures of the character's clothing realistic and well-defined<additional\>?  
+    
+  Now, the prompt is as following:
+  Prompt:{locPrompt}
