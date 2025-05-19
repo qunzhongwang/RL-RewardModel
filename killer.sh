@@ -2,6 +2,7 @@
 
 # 输入参数
 pid=$1  # 已知任务的 PID，从命令行传入
+cd /m2v_intern/wangqunzhong/research/ddpo-pytorch
 next_task="source rl_auxscripts/rl_sh/"$2"gpu_rl.sh --entropy_loss=True --reward_cot=False"  # 下一个任务
 
 # 检查 PID 是否存在
