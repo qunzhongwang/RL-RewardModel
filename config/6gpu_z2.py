@@ -6,9 +6,11 @@ date_tag = datetime.now().strftime("%m%d")
 
 def get_config():
     config = base_config()
-    config.Project_name += "_6gpu"+ date_tag
+    config.Project_name += "_6gpu_"+ date_tag
     config.run_name = "6gpu_rl"
     config.inference = False
+    config.resume_ckpt = ""
+    
     config.deepspeed_stage = 2
     config.resume_ckpt = ""
     config.data_conf.chunk_size = 800

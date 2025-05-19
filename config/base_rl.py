@@ -20,7 +20,7 @@ def get_config():
 
     config.num_epochs = 5
     config.inference = False
-    config.resume_ckpt = "0"
+    config.resume_ckpt = ""
 
     config.mixed_precision = "bf16"#"bf16"
     config.deepspeed_stage = 0
