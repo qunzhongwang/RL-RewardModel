@@ -1,0 +1,16 @@
+# 忽略所有内容
+*
+
+# 跟踪 config 目录
+!rl_auxscripts/
+!rl_auxscripts/**
+!rl_scripts/
+!rl_scripts/**
+!ddpo_pytorch/
+!ddpo_pytorch/**
+!config/
+!config/**
+!environment_new.yml
+!setup.py
+!requirements.txt
+!.gitignore
