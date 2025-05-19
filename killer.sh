@@ -13,8 +13,8 @@ fi
 echo "Managing task with PID: $pid"
 
 # 等待 3 小时
-echo "Waiting for 3 hours before stopping the task..."
-sleep 3h
+echo "Waiting for 3 hours before stopping the task... and start $next_task"
+sleep 3s
 
 # 杀掉指定的任务
 echo "Stopping task with PID: $pid"
