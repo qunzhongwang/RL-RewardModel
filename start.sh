@@ -1,1 +1,1 @@
-source rl_auxscripts/rl_sh/6gpu_rl.sh --entropy_loss=True
+source rl_auxscripts/rl_sh/"$@"gpu_rl.sh --entropy_loss=True
