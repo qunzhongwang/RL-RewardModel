@@ -44,6 +44,8 @@ tqdm = partial(tqdm.tqdm, dynamic_ncols=True)
 config_flags.DEFINE_config_file("config", "config/base_rl.py", "Training configuration.")
 flags.DEFINE_string("Project_name", None, "Override 'Project_name' in config.")
 flags.DEFINE_bool("debug_ver", None, "Override 'DEBUG' in config.")
+flags.DEFINE_bool("entropy_loss", False, "override entropy loss switch")
+
 FLAGS = flags.FLAGS
 FLAGS(sys.argv)
 
@@ -57,6 +59,9 @@ def main(_):
         config.debug_ver = FLAGS.debug_ver
     if config.debug_ver:
         config.Project_name = "DEBUG_NULL"
+    if FLAGS.entropy_loss:
+        config.rl_conf.entropy_loss = True
+
     
     # basic Accelerate and logging setup
     set_seed(config.seed)

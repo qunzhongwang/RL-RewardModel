@@ -17,7 +17,7 @@ from torchvision import transforms
 from torch.utils.data import DataLoader
 from datasets import load_dataset
 import cv2
-from decord import VideoReader
+# from decord import VideoReader
 import pandas as pd
 from tqdm import tqdm
 

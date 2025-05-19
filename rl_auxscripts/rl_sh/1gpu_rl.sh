@@ -1,17 +1,5 @@
 #!/usr/bin/env zsh
 
-DEBUG_FLAG=""
-
-for arg in "$@"; do
-  case $arg in
-    --debug)
-      DEBUG_FLAG="--debug_ver=True"
-      shift
-      ;;
-    *)
-      ;;
-  esac
-done
 
 MAINSCRIP="rl_scripts/rl_pipeline.py"
 BASEJSON="config/acc_config/"
@@ -20,4 +8,4 @@ BASECONF="config/"
 cd /m2v_intern/wangqunzhong/research/ddpo-pytorch
 conda activate cklst
 source rl_auxscripts/export_sh.sh
-CUDA_VISIBLE_DEVICES=0 accelerate launch --config_file "${BASEJSON}1gpu.json" $MAINSCRIP --config ${BASECONF}1gpu_z0.py $DEBUG_FLAG
+CUDA_VISIBLE_DEVICES=0 accelerate launch --config_file "${BASEJSON}1gpu.json" $MAINSCRIP --config ${BASECONF}1gpu_z0.py "$@"
