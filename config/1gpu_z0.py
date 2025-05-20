@@ -12,8 +12,8 @@ def get_config():
     config.log_freq = 2
     
     ##### Data #####
-    config.data_conf.chunk_size = 3
-    config.data_conf.verify_chunk_size = 2
+    config.data_conf.chunk_size = 300
+    config.data_conf.verify_chunk_size = 50
 
     ##### Reward #####
     config.reward.reward_method = "unif"

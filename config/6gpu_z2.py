@@ -14,7 +14,7 @@ def get_config():
     config.deepspeed_stage = 2
     config.resume_ckpt = ""
     config.data_conf.chunk_size = 800
-    config.data_conf.verify_chunk_size = 120
+    config.data_conf.verify_chunk_size = 60
     
     config.dataset_url = "/m2v_intern/wangqunzhong/research/huggingface/dataset/ymhao/HPD_v2"
     

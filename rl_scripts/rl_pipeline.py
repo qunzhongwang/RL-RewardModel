@@ -28,7 +28,9 @@ from absl import app, flags
 from accelerate import Accelerator, DeepSpeedPlugin
 from accelerate.utils import set_seed, ProjectConfiguration, FP8RecipeKwargs
 from accelerate.logging import get_logger
-from transformers import AutoProcessor, Qwen2VLForConditionalGeneration
+from transformers import Qwen2VLForConditionalGeneration, AutoTokenizer, AutoProcessor
+from qwen_vl_utils import process_vision_info
+
 from peft import LoraConfig, get_peft_model, PeftModel
 from bitsandbytes.optim import AdamW8bit
 from undecorated import undecorated

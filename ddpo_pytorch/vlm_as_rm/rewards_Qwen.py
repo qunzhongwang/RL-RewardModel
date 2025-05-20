@@ -241,7 +241,7 @@ def evaluate_QwenVL2_7B():
             if config["reward"]["reward_method"] == "std":
                 rewards_tensor = (rewards_tensor - global_mean) / (global_std + 1e-8)  # 避免除以0
             elif config["reward"]["reward_method"] == "unif":
-                rewards_tensor = rewards_tensor -1.05 / 1.5
+                rewards_tensor = (rewards_tensor -1.05) / 1.5
             
             clip_epsilon = config["rl_conf"]["clip_epsilon"]
             entropy_coef = config["rl_conf"]["entropy_coef"]
