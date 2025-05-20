@@ -119,7 +119,7 @@ def encodeAsPIL(imagelist, target_size=512,  as_base64=False):
     # Otherwise, return the PIL Image object
     return combined_image
 
-def make_collate_fn(processor, data_name):
+def make_collate_fn(processor, data_name,parser_type="image",accelerator=None):
     def collate(batch):    
         #保证胜负 随机inverse
         for sample in batch:
@@ -177,8 +177,67 @@ def make_collate_fn(processor, data_name):
         #         print(f"[ok] {key} is now requires_grad=True")
         #         break  # 如果只需要处理第一个满足条件的张量，则可以跳出循环
         model_inputs["invs"] = invs
+                # 如果传入了 accelerator，将数据移动到其 device
+        if accelerator is not None:
+            for key, value in model_inputs.items():
+                if isinstance(value, torch.Tensor):
+                    model_inputs[key] = value.to(accelerator.device)
+            # 如果需要，处理 batch 中的其他数据
+            for sample in batch:
+                for key, value in sample.items():
+                    if isinstance(value, torch.Tensor):
+                        sample[key] = value.to(accelerator.device)
+
         return model_inputs, batch          # 附带原始样本用于 reward
-    return collate
+    
+    def video_collate(batch):
+        videos   = []
+        prompts= []
+        for sample in batch:
+            if use_frames:
+                selected_frames = get_frame_list(output_path)
+                # Create messages structure for frames
+                msg = [
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "video",
+                                "video": selected_frames,
+                                "fps": 1.0,
+                            },
+                            {"type": "text", "text": prompt},
+                        ],
+                    }]
+            else:
+                # Create messages structure for the entire video
+                msg = [
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "video",
+                                "video": f"file://{video_path}",
+                                "max_pixels": 360 * 420,
+                                "fps": 1.0,
+                            },
+                            {"type": "text", "text": prompt},
+                        ],
+                    }
+                ]
+            # 同一段文字 prompt
+            prompts.append(
+                processor.apply_chat_template(
+                msg, tokenize=False, add_generation_prompt=True
+                )
+            )
+        # tokenizer 会把 <image> placeholder 插进去
+        image_inputs, video_inputs = process_vision_info(prompts)
+        model_inputs = processor(text=prompts,images=image_inputs,videos=video_inputs,padding=True,return_tensors="pt",)
+
+        return model_inputs, batch
+    
+    return collate if parser_type=="image" else video_collate
 
 def _global_grad_norm(parameters, norm_type=2):
     parameters = [p for p in parameters if p.grad is not None]

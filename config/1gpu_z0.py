@@ -14,6 +14,7 @@ def get_config():
     ##### Data #####
     config.data_conf.chunk_size = 300
     config.data_conf.verify_chunk_size = 50
+    config.train.batch_size = 1
 
     ##### Reward #####
     config.reward.reward_method = "unif"

@@ -26,6 +26,8 @@ import tqdm
 from datasets import Dataset, load_dataset, load_from_disk
 from absl import app, flags
 from accelerate import Accelerator, DeepSpeedPlugin
+from accelerate.state import AcceleratorState
+
 from accelerate.utils import set_seed, ProjectConfiguration, FP8RecipeKwargs
 from accelerate.logging import get_logger
 from transformers import Qwen2VLForConditionalGeneration, AutoTokenizer, AutoProcessor
@@ -70,7 +72,10 @@ def main(_):
 
     
     # basic Accelerate and logging setup
-    set_seed(config.seed)
+    # set_seed(config.seed)
+    # 获取当前 GPU 的进程 ID
+    
+    
     if config.deepspeed_stage in [1,2]:
         deepspeed_plugin = DeepSpeedPlugin(
             zero_stage=config.deepspeed_stage,  # ZeRO Stage 选择
@@ -96,6 +101,7 @@ def main(_):
             gradient_accumulation_steps=config.train.gradient_accumulation_steps,
             deepspeed_plugin=deepspeed_plugin,
         )
+        AcceleratorState().deepspeed_plugin.deepspeed_config["train_micro_batch_size_per_gpu"] = 1
     else:
         accelerator = Accelerator( 
             log_with="wandb",
@@ -104,6 +110,20 @@ def main(_):
             gradient_accumulation_steps=config.train.gradient_accumulation_steps,
         )
     
+    rank = accelerator.process_index  # 每个 GPU 的唯一进程 ID
+
+    # 设置随机种子
+    seed = 42 + rank  # 每个 GPU 的种子不同
+    torch.manual_seed(seed)
+    random.seed(seed)
+    np.random.seed(seed)
+
+    # 如果使用 CUDA
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+    print(f"Rank {rank}: Random seed set to {seed}")
+
     if config.deepspeed_stage != 3:
         model = Qwen2VLForConditionalGeneration.from_pretrained(
             "Qwen/Qwen2-VL-7B-Instruct", 
@@ -137,7 +157,7 @@ def main(_):
     else:
         dataset = load_dataset(dataset_name, split="validation", num_proc=64)
     
-    loader = DataLoader(train_dataset, batch_size=config.train.batch_size, shuffle=True, collate_fn=make_collate_fn(processor, data_name))
+    loader = DataLoader(train_dataset, batch_size=config.train.batch_size, shuffle=True, collate_fn=make_collate_fn(processor, data_name, accelerator=accelerator))
     validation_loader =  DataLoader(val_dataset, batch_size=config.val.val_batch_size, shuffle=True, collate_fn=make_collate_fn(processor, data_name))
     unique_id,ckptuid = get_uid()
 
@@ -256,7 +276,9 @@ def main(_):
     if config.inference:
         model, loader, validation_loader = accelerator.prepare(model, loader, validation_loader)
     else:
-        model, optimizer, loader, validation_loader = accelerator.prepare(model, optimizer, loader, validation_loader)
+        model, optimizer = accelerator.prepare(model, optimizer)
+        # loader = accelerator.prepare_data_loader(loader, prepare_data_loader=False)
+        # validation_loader = accelerator.prepare_data_loader(validation_loader, prepare_data_loader=False)
     
     for key1,key2 in zip(cumulative_sums, cumulative_counts):
         if isinstance(cumulative_sums[key1], torch.Tensor):
@@ -277,7 +299,7 @@ def main(_):
     logger.info(f"\n{config}")
 
 
-    reward_fn = getattr(ddpo_pytorch.vlm_as_rm.rewards_Qwen, config.reward.reward_pw_fn)()
+    reward_fn = getattr(ddpo_pytorch.vlm_as_rm.rewards_Qwen, config.reward.reward_pw_fn)(select="grpo")
     
     def reward_func(batch,accelerator):
         loss,retInfo = reward_fn(batch, toolbox= (model, processor,logger), accelerator=accelerator,config=config)
@@ -293,6 +315,7 @@ def main(_):
         tmp_grad = []
         iter_lth = len(loader)
         for idx, batch in tqdm(enumerate(loader)):
+            print(batch[1][0]['prompt'])
             loss,retInfo = reward_func(batch[0],accelerator)
             for key in retInfo:
                 if isinstance(retInfo[key], torch.Tensor):

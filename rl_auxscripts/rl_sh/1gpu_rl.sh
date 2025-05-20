@@ -8,4 +8,4 @@ BASECONF="config/"
 cd /m2v_intern/wangqunzhong/research/ddpo-pytorch
 conda activate cklst
 source rl_auxscripts/export_sh.sh
-CUDA_VISIBLE_DEVICES=0 accelerate launch --config_file "${BASEJSON}1gpu.json" $MAINSCRIP --config ${BASECONF}1gpu_z0.py "$@"
+CUDA_VISIBLE_DEVICES=0 accelerate launch --config_file "${BASEJSON}1gpu.json" $MAINSCRIP --config ${BASECONF}1gpu_grpo.py "$@"

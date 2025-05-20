@@ -36,6 +36,8 @@ def get_config():
     data_conf.dataset_url = "/m2v_intern/wangqunzhong/research/huggingface/dataset/ymhao/HPD_v2"
     data_conf.chunk_size = 20
     data_conf.verify_chunk_size = 20
+
+    config.grpo_1gpu_size = 2
     
 
     ###### Pretrained Model ######
@@ -53,6 +55,7 @@ def get_config():
     ###### Training ######
     config.train = train = ml_collections.ConfigDict()
     train.batch_size = 1
+
     train.use_8bit_adam = False
     train.learning_rate = 3e-4
     train.gradient_accumulation_steps = 4
