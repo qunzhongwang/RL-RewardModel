@@ -1,70 +1,59 @@
 prompt: |
-  Conduct a detailed image comparison based on the provided prompt {locPrompt}. The generated image is structured such that the **left part represents Image 1** and the **right part represents Image 2**. Follow the analysis through the following phases:
+  You are an experienced Picture Comparison Reviewer. Your task is to conduct a thorough image comparison based on the given prompt {locPrompt} and the two generated pictures derived from it. The generated image is structured such that the left part represents Image 1 and the right part represents Image 2.
+  You must strictly follow the instructions below to complete the review. Your response must conclude with a clear Answer: Image 1 / Tie / Image 2 structure to fulfill the task requirements. Use the following phases to guide your analysis:
 
-  Checklist Generation:
-    1. Identify Critical Dimensions:
-    - Enumerate essential dimensions for comparison.
-    - Assign importance to these dimensions
-    2. Output Format:  
-    - Clearly label each dimension.  
-    - Provide a description and importance for each dimension.
+  1.Checklist Generation:
+    Dimension 1: [Description of Dimension]  
+    Importance: [1/2/3]
+    Dimension 2: [Description of Dimension]  
+    Importance: [1/2/3]
 
-
-  Detailed Comparison:
-  For each dimension identified in the checklist:
-
-    Dimension: Briefly describe the dimension's importance in the context of the task.  
+  2.Detailed Comparison:
+    Dimension 1: [Description of Dimension]
     - Image 1 Analysis: Evaluate Image 1 based on this dimension.  
     - Image 2 Analysis: Evaluate Image 2 based on this dimension.  
     - Preference: Declare a preference for Image 1, Image 2, or a Tie, supported by reasoning.  
-    - Importance: State the importance assigned to this dimension.
+    Dimension 2: [Description of Dimension]
+    - Image 1 Analysis: Evaluate Image 1 based on this dimension.  
+    - Image 2 Analysis: Evaluate Image 2 based on this dimension.  
+    - Preference: Declare a preference for Image 1, Image 2, or a Tie, supported by reasoning.  
+    
+  3.Deep Analysis:
+    Critical Evaluation. Provide detailed reasoning for judgments made in the structured comparison phase. Explain the rationale behind preferences, considering contextual factors and potential edge cases. Highlight trade-offs or particularly noteworthy aspects of each image.
 
+  4.Holistic Verdict:
+    Synthesis, go beyond numerical scores to synthesize a holistic conclusion based on the analysis, provide an overall judgment, considering the relative importance of dimensions and contextual factors.
 
-  Deep Analysis:
-    - Critical Evaluation:
-    - Provide detailed reasoning for judgments made in the structured comparison phase.
-    - Explain the rationale behind preferences, considering contextual factors and potential edge cases.
-    - Highlight trade-offs or particularly noteworthy aspects of each image.
+  5.Final Verdict: 
+  Answer: Image 1 / Tie / Image 2
 
+  Here is a example format:
 
-
-  Holistic Verdict:
-    - Synthesis:
-    - Go beyond numerical scores to synthesize a holistic conclusion based on the analysis.
-    - Provide an overall judgment, considering the relative importance of dimensions and contextual factors.
- 
-  Final Verdict: Image 1 / Tie / Image 2  
-
-  **Required Output Format**
-  The response **must strictly adhere to the following structure**. Any deviation will render the response invalid:
-
-  Checklist Generation
+  1. Checklist Generation:
   Dimension 1: [Description of Dimension]  
   Importance: [1/2/3]
-
   Dimension 2: [Description of Dimension]  
   Importance: [1/2/3]
-
   ...
 
-  Detailed Comparison
+  2. Detailed Comparison:
   Dimension 1: [Description of Dimension]  
-  - Image 1: [Evaluation of Image 1 for this dimension]  
-  - Image 2: [Evaluation of Image 2 for this dimension]  
+  - Image 1 Analysis: [Evaluation of Image 1 for this dimension]  
+  - Image 2 Analysis: [Evaluation of Image 2 for this dimension]  
   - Preference: Image 1 / Image 2 / Tie  
-  - Importance: [1/2/3]
+
 
   Dimension 2: [Description of Dimension]  
-  - Image 1: [Evaluation of Image 1 for this dimension]  
-  - Image 2: [Evaluation of Image 2 for this dimension]  
+  - Image 1 Analysis: [Evaluation of Image 1 for this dimension]  
+  - Image 2 Analysis: [Evaluation of Image 2 for this dimension]  
   - Preference: Image 1 / Image 2 / Tie  
-  - Importance: [1/2/3]
-
   ...
 
-  Deep Analysis
+  3. Deep Analysis:
   [Provide in-depth reasoning and contextual analysis here.]
 
-  Holistic Verdict
+  4. Holistic Verdict: 
   [Summarize the overall assessment here.]  
-  Final Verdict: Image 1 / Tie / Image 2
+
+  5. Final Verdict: 
+  Answer: Image 1 / Tie / Image 2

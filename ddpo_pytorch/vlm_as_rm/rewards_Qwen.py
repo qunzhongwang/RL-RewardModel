@@ -21,6 +21,20 @@ import cv2
 import pandas as pd
 from tqdm import tqdm
 
+def sum(x):
+    res = 0
+    for y in x:
+        if y is not None:
+            res += y
+    return res
+
+def sum(x):
+    res = 0
+    for y in x:
+        if y is not None:
+            res += y
+    return res
+
 with open("config/pmt_yaml/qwen_full_rsps.yaml") as ym_file:
     data = yaml.safe_load(ym_file)
 FullPmt = data["prompt"]
@@ -37,7 +51,7 @@ def evaluate_QwenVL2_7B(select="general"):
         }
         
         # 1. Extract Final Verdict
-        final_verdict_match = re.search(r"Final Verdict:\s*(Image 1|Tie|Image 2|Image1|Image2|Image1/Tie/Image2)", text, re.IGNORECASE)
+        final_verdict_match = re.search(r"Answer:\s*(Image 1|Tie|Image 2|Image1|Image2|Image1/Tie/Image2)", text, re.IGNORECASE)
         if final_verdict_match:
             verdict = final_verdict_match.group(1).strip().lower()
             if verdict in ["image 1", "image1"]:
@@ -56,7 +70,7 @@ def evaluate_QwenVL2_7B(select="general"):
         
         # 3. Check Format Validity
         # Required sections: Checklist Generation, Detailed Comparison, Deep Analysis, Holistic Verdict
-        required_sections = ["Checklist Generation", "Detailed Comparison", "Deep Analysis", "Holistic Verdict"]
+        required_sections = ["Checklist Generation", "Detailed Comparison", "Deep Analysis", "Holistic Verdict","Final Verdict"]
         section_found = all(re.search(rf"{section}", text, re.IGNORECASE) for section in required_sections)
         result["is_valid_format"] = section_found
         
@@ -66,6 +80,7 @@ def evaluate_QwenVL2_7B(select="general"):
             analysis_content = analysis_section_match.group(1).strip()
             result["analysis_length"] = len(analysis_content)
         
+
         return result
             
     def _fn_general(inputs, toolbox=None,accelerator=None,config=None):
@@ -184,7 +199,7 @@ def evaluate_QwenVL2_7B(select="general"):
             if not fmt:
                 curr_reward = -0.5
             elif chiz is None:
-                curr_reward = 0.5
+                curr_reward = -0.5
             else:
                 curr_reward =  int(fmt) + int( (1-2*inv) == chiz)*3 + int( chiz == 0 ) - 1.5
                 if config["reward"]["reward_long_cot"]:
@@ -419,7 +434,8 @@ def evaluate_QwenVL2_7B(select="general"):
                 logp_list.append(logp)
 
             logp_tensor = torch.stack(logp_list, dim=0)
-            total_logp = logp_tensor.mean(dim=1) 
+            total_logp = logp_tensor.mean(dim=1)
+            # breakpoint() 
 
         generated_ids_trimmed = [
             out_ids[len(in_ids):] 
@@ -433,7 +449,7 @@ def evaluate_QwenVL2_7B(select="general"):
             skip_special_tokens=True,
             clean_up_tokenization_spaces=False
         )
-
+        #breakpoint()
         if config.get("log_cot", None) and config.get("curr_batch_dir", None):
             for idx, sample in enumerate(ans):
                 file_path = os.path.join(config["curr_batch_dir"], f"{idx}_cot.txt")
@@ -447,6 +463,7 @@ def evaluate_QwenVL2_7B(select="general"):
         lth = []
         rzlths = []
         ckptcnts = []
+        valid = []
         for txt,inv in zip(ans,invs):
             resDict = parse_output(txt)
             fmt = resDict["is_valid_format"]
@@ -456,7 +473,7 @@ def evaluate_QwenVL2_7B(select="general"):
             if not fmt:
                 curr_reward = -0.5
             elif chiz is None:
-                curr_reward = 0.5
+                curr_reward = -0.5
             else:
                 curr_reward =  int(fmt) + int( (1-2*inv) == chiz)*3 + int( chiz == 0 ) - 1.5
                 if config["reward"]["reward_long_cot"]:
@@ -466,6 +483,8 @@ def evaluate_QwenVL2_7B(select="general"):
             fmts.append(int(fmt))
             chz.append(int( (1-2*inv) == chiz)+0.5*(chiz==0))
             lth.append(len(txt))
+            valid.append(int(chiz is None))
+            
 
         retInfo = {
             "fomat correctness": sum(fmts) / len(fmts)*1. if fmts else 0.,  # 防止列表为空
@@ -473,6 +492,7 @@ def evaluate_QwenVL2_7B(select="general"):
             "avg lth": sum(lth) / len(lth)*1. if lth else 0.,
             "avg reward": sum(rewards) / len(rewards)*1. if rewards else 0.,
             "avg reasoning": sum(rzlths) / len(rzlths)*1. if rzlths else 0.,
+            "valid rate": sum(valid) / len(valid)*1. if valid else 0.,
             #"avg check point count": sum(ckptcnts) / len(ckptcnts) if ckptcnts else 0,
 
         }
@@ -484,7 +504,7 @@ def evaluate_QwenVL2_7B(select="general"):
         # 在主进程上计算全局均值和标准差（跨 8 个样本）
         global_mean = all_rewards_tensor.mean()
         chz_mean = all_chz_tensor.mean()
-        global_std = all_rewards_tensor.std()
+        global_std = all_rewards_tensor.std() if len(all_rewards_tensor) > 1 else 0.
         retInfo["global avg correctness"] = chz_mean* 1.
         retInfo["global avg reward"] = global_mean* 1.
         retInfo["global reward std"] = global_std**2 *1.
