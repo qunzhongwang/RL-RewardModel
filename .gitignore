@@ -19,4 +19,4 @@
 __pycache__/
 *.pyc
 *.pyo
-!wandb/
+!wandb/**
