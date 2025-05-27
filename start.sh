@@ -1,1 +1,1 @@
-source rl_auxscripts/rl_sh/"$@"gpu_rl.sh --entropy_loss=True --reward_cot=True
+source rl_auxscripts/rl_sh/"$@"gpu_rl.sh --entropy_loss=False --reward_cot=True

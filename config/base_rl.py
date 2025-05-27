@@ -33,7 +33,7 @@ def get_config():
     ###### Data #####
     config.data_conf = data_conf = ml_collections.ConfigDict()
     data_conf.dataset_num_proc = 64
-    data_conf.dataset_url = "/m2v_intern/wangqunzhong/research/huggingface/dataset/ymhao/HPD_v2"
+    data_conf.dataset_url = "/m2v_intern/wangqunzhong/research/kwai_data/dataset/data"#"/m2v_intern/wangqunzhong/research/huggingface/dataset/ymhao/HPD_v2"
     data_conf.chunk_size = 20
     data_conf.verify_chunk_size = 20
 

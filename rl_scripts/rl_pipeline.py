@@ -154,10 +154,38 @@ def main(_):
     if data_name == "pickscore_normal" or data_name == "HPD_v2":
         #config.data_conf.chunk_size = 10
         train_dataset,val_dataset = get_streamed_dataset(dataset_name, config.data_conf.chunk_size, config.data_conf.verify_chunk_size)
+    elif data_name == "human_video":
+        # dataset = load_dataset(
+        #     "csv", 
+        #     data_files="/m2v_intern/wangqunzhong/research/kwai_data/dataset/data.csv",
+        #     split="train[:90%]+validation[:10%]"
+        # )
+        # dataset = dataset.select_columns(["chosen_video_path", "rejected_video_path", "caption"])
+        # train_dataset,val_dataset = dataset["train"], dataset["validation"]
+        # 加载完整数据集
+        dataset = load_dataset(
+        "csv", 
+        data_files="/m2v_intern/wangqunzhong/research/kwai_data/dataset/data.csv"
+        )["train"]
+
+        # 按 90:10 划分训练集和验证集
+        split_dataset = dataset.train_test_split(test_size=0.1, seed=42)
+
+        # 训练集和验证集
+        train_dataset = split_dataset["train"]
+        val_dataset = split_dataset["test"]
+
+        # 选择特定列
+        train_dataset = train_dataset.select_columns(["chosen_video_path", "rejected_video_path", "caption"])
+        val_dataset = val_dataset.select_columns(["chosen_video_path", "rejected_video_path", "caption"])
+
+        # print(train_dataset)
+        # print(val_dataset)
+        # breakpoint()
     else:
         dataset = load_dataset(dataset_name, split="validation", num_proc=64)
     
-    loader = DataLoader(train_dataset, batch_size=config.train.batch_size, shuffle=True, collate_fn=make_collate_fn(processor, data_name, accelerator=accelerator))
+    loader = DataLoader(train_dataset, batch_size=config.train.batch_size, shuffle=False, collate_fn=make_collate_fn(processor, data_name, accelerator=accelerator))
     validation_loader =  DataLoader(val_dataset, batch_size=config.val.val_batch_size, shuffle=True, collate_fn=make_collate_fn(processor, data_name))
     unique_id,ckptuid = get_uid()
 
@@ -312,10 +340,15 @@ def main(_):
     for epoch in tqdm(range(init_epoch, config.num_epochs)):
         #logger.info("next epoch")
         model.train()
+        model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant":False})
+        # for _ in model.parameters():
+        #     _.requires_grad_()
+        #     break()
+        #breakpoint()
         tmp_grad = []
         iter_lth = len(loader)
         for idx, batch in tqdm(enumerate(loader)):
-            print(batch[1][0]['prompt'])
+            print(batch[1][0]['caption'])
             loss,retInfo = reward_func(batch[0],accelerator)
             for key in retInfo:
                 if isinstance(retInfo[key], torch.Tensor):

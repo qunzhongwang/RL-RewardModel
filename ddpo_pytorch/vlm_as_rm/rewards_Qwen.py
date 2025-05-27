@@ -50,37 +50,17 @@ def evaluate_QwenVL2_7B(select="general"):
             "total_length": len(text)  # Total character count of the entire text
         }
         
-        # 1. Extract Final Verdict
-        final_verdict_match = re.search(r"Answer:\s*(Image 1|Tie|Image 2|Image1|Image2|Image1/Tie/Image2)", text, re.IGNORECASE)
-        if final_verdict_match:
-            verdict = final_verdict_match.group(1).strip().lower()
-            if verdict in ["image 1", "image1"]:
-                result["final_verdict"] = 1
-            elif verdict in ["tie","image1/tie/image2"]:
-                result["final_verdict"] = 0
-            elif verdict in ["image 2", "image2"]:
-                result["final_verdict"] = -1
-        
-        # 2. Count Checklist Dimensions (based only on Checklist Generation section)
-        checklist_section_match = re.search(r"Checklist Generation(.*?)(?:Detailed Comparison|Deep Analysis|Holistic Verdict)", text, re.IGNORECASE | re.DOTALL)
-        if checklist_section_match:
-            checklist_section = checklist_section_match.group(1)
-            checklist_matches = re.findall(r"Dimension\s*\d+:", checklist_section, re.IGNORECASE)
-            result["checklist_count"] = len(checklist_matches)
-        
-        # 3. Check Format Validity
-        # Required sections: Checklist Generation, Detailed Comparison, Deep Analysis, Holistic Verdict
-        required_sections = ["Checklist Generation", "Detailed Comparison", "Deep Analysis", "Holistic Verdict","Final Verdict"]
-        section_found = all(re.search(rf"{section}", text, re.IGNORECASE) for section in required_sections)
-        result["is_valid_format"] = section_found
-        
-        # 4. Extract Total Analysis Length (Deep Analysis + Holistic Verdict)
-        analysis_section_match = re.search(r"Deep Analysis(.*?)(?:$)", text, re.IGNORECASE | re.DOTALL)
-        if analysis_section_match:
-            analysis_content = analysis_section_match.group(1).strip()
-            result["analysis_length"] = len(analysis_content)
-        
-
+        if "image 1 is better" in text.lower():
+            result["final_verdict"] = 1
+        elif "image 2 is better" in text.lower():
+            result["final_verdict"] = -1
+        else:
+            result["final_verdict"] = 0
+        flag = True
+        for _ in ["checklist generation", "detailed comparison", "deep analysis", "holistic verdict","final verdict"]:
+            flag = flag and _ in text.lower()
+        result["is_valid_format"] = flag
+        result["analysis_length"] =  len(text)
         return result
             
     def _fn_general(inputs, toolbox=None,accelerator=None,config=None):
@@ -395,10 +375,9 @@ def evaluate_QwenVL2_7B(select="general"):
         pad_token_id = processor.tokenizer.pad_token_id
         generate_kwargs = {
             "do_sample": True,           # 启用采样模式
-            "temperature": 1.5,          # 增加随机性
+            "temperature": 1.7,          # 增加随机性
             "top_k": 200,                 # 考虑前 50 个概率最高的词
-            # "top_p": 0.9,                # 核采样，动态控制候选词
-            "num_return_sequences": config.grpo_1gpu_size    # 仅返回一个生成序列
+            "num_return_sequences": config.grpo_1gpu_size
         }
     
         generated_sequences = model.generate(
@@ -406,7 +385,7 @@ def evaluate_QwenVL2_7B(select="general"):
             max_new_tokens=2048,               # 控制生成的最大长度
             pad_token_id=pad_token_id,         # 确保填充符正确
             return_dict_in_generate=False,     # 不需要返回完整生成信息
-            use_cache=True,                    # 提高效率
+            use_cache=False,                    # 提高效率
             **generate_kwargs                  # 动态更新生成参数
         )
         attention_mask = (generated_sequences != pad_token_id).long()
@@ -418,7 +397,7 @@ def evaluate_QwenVL2_7B(select="general"):
                 attention_mask=attention_mask,
                 return_dict=True,
                 output_hidden_states=True,
-                use_cache = config["transformer"]["use_cache"],
+                use_cache = False#config["transformer"]["use_cache"],
             )
             
 
@@ -435,7 +414,6 @@ def evaluate_QwenVL2_7B(select="general"):
 
             logp_tensor = torch.stack(logp_list, dim=0)
             total_logp = logp_tensor.mean(dim=1)
-            # breakpoint() 
 
         generated_ids_trimmed = [
             out_ids[len(in_ids):] 
@@ -450,7 +428,7 @@ def evaluate_QwenVL2_7B(select="general"):
             clean_up_tokenization_spaces=False
         )
         #breakpoint()
-        accelerator.log(ans[0])
+        accelerator.print(ans[0])
 
         if config.get("log_cot", None) and config.get("curr_batch_dir", None):
             for idx, sample in enumerate(ans):
@@ -479,7 +457,7 @@ def evaluate_QwenVL2_7B(select="general"):
             else:
                 curr_reward =  int(fmt) + int( (1-2*inv) == chiz)*3 + int( chiz == 0 ) - 1.5
                 if config["reward"]["reward_long_cot"]:
-                    curr_reward += resDict["total_length"]/3000. - 0.95
+                    curr_reward += resDict["total_length"]/1000. - 0.85
             
             rewards.append(curr_reward)
             fmts.append(int(fmt))

@@ -12,6 +12,7 @@ import torch
 import numpy as np
 from PIL import Image
 from datasets import Dataset, load_dataset, load_from_disk
+from qwen_vl_utils import process_vision_info
 
 # 自定义模块导入
 from ddpo_pytorch.vlm_as_rm.rewards_Qwen import FullPmt
@@ -31,6 +32,8 @@ def get_dataname(dataset_name=None):
         data_name = "imagereward"
     elif dataset_name == "/m2v_intern/liujie/research/huggingface/dataset/yuvalkirstain/pickapic_v1":
         data_name = "pickscore_normal"
+    elif dataset_name == "/m2v_intern/wangqunzhong/research/kwai_data/dataset/data":
+        data_name = "human_video"
     else:
         data_name = "HPD_v2"
     return data_name
@@ -120,6 +123,8 @@ def encodeAsPIL(imagelist, target_size=512,  as_base64=False):
     return combined_image
 
 def make_collate_fn(processor, data_name,parser_type="image",accelerator=None):
+    if data_name == "human_video":
+        parser_type="video"
     def collate(batch):    
         #保证胜负 随机inverse
         for sample in batch:
@@ -154,11 +159,12 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None):
         invs = []
         for sample in batch:
             gross_img  = encodeAsPIL([sample["lpic"],sample["rpic"]])
-            imgs.append(gross_img)
+            imgs.append([sample["lpic"], sample["rpic"]])
             # 同一段文字 prompt
             msg = [{
                 "role":"user",
                 "content":[
+                    {"type":"image"},
                     {"type":"image"},
                     {"type":"text","text":FullPmt.format(locPrompt=sample["caption"])}
                 ]
@@ -177,7 +183,7 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None):
         #         print(f"[ok] {key} is now requires_grad=True")
         #         break  # 如果只需要处理第一个满足条件的张量，则可以跳出循环
         model_inputs["invs"] = invs
-                # 如果传入了 accelerator，将数据移动到其 device
+        # 如果传入了 accelerator，将数据移动到其 device
         if accelerator is not None:
             for key, value in model_inputs.items():
                 if isinstance(value, torch.Tensor):
@@ -191,10 +197,26 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None):
         return model_inputs, batch          # 附带原始样本用于 reward
     
     def video_collate(batch):
+        FullPmt = """\
+            Given a caption and two videos generated based on this caption, please analyze in detail the two provided videos. Evaluate them on various dimensions such as semantic consistency (how closely the video content aligns with the caption), temporal coherence (smoothness and logical flow of motion across frames), authenticity (realism and attention to detail), and any other factors you deem relevant. For each evaluation dimension, provide a score between 1-10 for both videos (e.g., Video 1: 8/10, Video 2: 6/10) and provide a concise rationale for the score. Calculate the total score for each video by summing all dimension scores. Use a chain-of-thought process to detail your reasoning steps, and enclose all your detailed reasoning within <think> and </think> tags. Then, in the <answer> tag, output exactly one of the following strings: 'Video 1 is better' or 'Video 2 is better' based on the total scores. No additional text is allowed in the <answer> section.\n\nExample output format:\n<think>\n1. Semantic consistency: Video 1 (9/10) - ...; Video 2 (7/10) - ...\n2. Temporal coherence: Video 1 (8/10) - ...; Video 2 (6/10) - ...\n3. Authenticity: Video 1 (7/10) - ...; Video 2 (5/10) - ...\n[Additional dimensions if any]: Video 2 (8/10) - ...; Video 1 (6/10) - ...\nTotal score:\nVideo 1: 9+8+7+6=30\nVideo 2: 7+6+5+8=26\n</think>\n<answer>Video 1 is better</answer>\n**Note: In the example above, scores and the final answer are placeholders meant only to demonstrate the format. Your actual evaluation should be based on the quality of two given videos.**\n\nYour task is provided as follows:\nText Caption: [{prompt}]
+        """
+        # prompt = batch['prompt'][0]
+        # answer = batch['Overall'][0]
+        use_frames = False
         videos   = []
         prompts= []
+        msgs = []
+        invs = []
         for sample in batch:
+            if random.random() > 0.5:
+                lvd, rvd, inv = "chosen_video_path", "rejected_video_path", 0
+            else:
+                lvd, rvd, inv = "rejected_video_path", "chosen_video_path", 1
+
+            invs.append(inv)
+
             if use_frames:
+                
                 selected_frames = get_frame_list(output_path)
                 # Create messages structure for frames
                 msg = [
@@ -210,6 +232,7 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None):
                         ],
                     }]
             else:
+
                 # Create messages structure for the entire video
                 msg = [
                     {
@@ -217,24 +240,40 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None):
                         "content": [
                             {
                                 "type": "video",
-                                "video": f"file://{video_path}",
+                                "video": f"{sample[lvd]}",#file://
                                 "max_pixels": 360 * 420,
-                                "fps": 1.0,
+                                "fps": 2.0,
                             },
-                            {"type": "text", "text": prompt},
+                            {
+                                "type": "video",
+                                "video": f"{sample[rvd]}",#file://
+                                "max_pixels": 360 * 420,
+                                "fps":2.0,
+                            },
+                            {"type": "text", "text": FullPmt.format(prompt=sample["caption"])},
                         ],
                     }
                 ]
+            
             # 同一段文字 prompt
             prompts.append(
                 processor.apply_chat_template(
                 msg, tokenize=False, add_generation_prompt=True
                 )
             )
+            msgs.append(msg)
         # tokenizer 会把 <image> placeholder 插进去
-        image_inputs, video_inputs = process_vision_info(prompts)
+        #breakpoint()
+        image_inputs, video_inputs = process_vision_info(msgs)
+        
         model_inputs = processor(text=prompts,images=image_inputs,videos=video_inputs,padding=True,return_tensors="pt",)
+        # for key, value in model_inputs.items():
+        #     if isinstance(value, torch.Tensor) and torch.is_floating_point(value):
+        #         model_inputs[key] = value.requires_grad_()
+        # breakpoint()
+        model_inputs["invs"] = invs
 
+        #breakpoint()
         return model_inputs, batch
     
     return collate if parser_type=="image" else video_collate

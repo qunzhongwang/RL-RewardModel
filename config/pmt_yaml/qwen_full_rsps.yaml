@@ -1,6 +1,6 @@
 prompt: |
-  You are an experienced Picture Comparison Reviewer. Your task is to conduct a thorough image comparison based on the given prompt {locPrompt} and the two generated pictures derived from it. The generated image is structured such that the left part represents Image 1 and the right part represents Image 2.
-  You must strictly follow the instructions below to complete the review. Your response must conclude with a clear Answer: Image 1 / Tie / Image 2 structure to fulfill the task requirements. Use the following phases to guide your analysis:
+  You are an experienced Picture Comparison Reviewer. Your task is to conduct a thorough image comparison based on the given prompt {locPrompt} and the two generated pictures derived from it. The first image represents Image 1 and the second one represents Image 2.
+  You must strictly adhere to the instructions below to complete the review. Your response must end with a clear structure: `Answer: Image 1 is better / Image 2 is better / Both are equally good` (select only one option, e.g., Answer: Image 1 is better) to meet the task requirements. Use the following phases to guide your analysis:
 
   1.Checklist Generation:
     Dimension 1: [Description of Dimension]  
@@ -25,7 +25,7 @@ prompt: |
     Synthesis, go beyond numerical scores to synthesize a holistic conclusion based on the analysis, provide an overall judgment, considering the relative importance of dimensions and contextual factors.
 
   5.Final Verdict: 
-  Answer: Image 1 / Tie / Image 2
+  Answer: Image 1 is better / Image 2 is better / Both are equally good
 
   Here is a example format:
 
@@ -40,13 +40,13 @@ prompt: |
   Dimension 1: [Description of Dimension]  
   - Image 1 Analysis: [Evaluation of Image 1 for this dimension]  
   - Image 2 Analysis: [Evaluation of Image 2 for this dimension]  
-  - Preference: Image 1 / Image 2 / Tie  
+  - Preference: Tie  
 
 
   Dimension 2: [Description of Dimension]  
   - Image 1 Analysis: [Evaluation of Image 1 for this dimension]  
   - Image 2 Analysis: [Evaluation of Image 2 for this dimension]  
-  - Preference: Image 1 / Image 2 / Tie  
+  - Preference: Image 1
   ...
 
   3. Deep Analysis:
@@ -56,4 +56,4 @@ prompt: |
   [Summarize the overall assessment here.]  
 
   5. Final Verdict: 
-  Answer: Image 1 / Tie / Image 2
+  Answer: Image 1 is better
