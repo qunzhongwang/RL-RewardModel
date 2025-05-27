@@ -264,17 +264,23 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None):
             msgs.append(msg)
         # tokenizer 会把 <image> placeholder 插进去
         #breakpoint()
-        image_inputs, video_inputs = process_vision_info(msgs)
-        
-        model_inputs = processor(text=prompts,images=image_inputs,videos=video_inputs,padding=True,return_tensors="pt",)
-        # for key, value in model_inputs.items():
-        #     if isinstance(value, torch.Tensor) and torch.is_floating_point(value):
-        #         model_inputs[key] = value.requires_grad_()
-        # breakpoint()
-        model_inputs["invs"] = invs
+        try:
+            image_inputs, video_inputs = process_vision_info(msgs)
 
-        #breakpoint()
-        return model_inputs, batch
+            
+            model_inputs = processor(text=prompts,images=image_inputs,videos=video_inputs,padding=True,return_tensors="pt",)
+            breakpoint()
+            # for key, value in model_inputs.items():
+            #     if isinstance(value, torch.Tensor) and torch.is_floating_point(value):
+            #         model_inputs[key] = value.requires_grad_()
+            # breakpoint()
+            model_inputs["invs"] = invs
+
+            #breakpoint()
+            return model_inputs, batch
+        except Exception as exp:
+            print(f"{exp}")
+            return None, None
     
     return collate if parser_type=="image" else video_collate
 

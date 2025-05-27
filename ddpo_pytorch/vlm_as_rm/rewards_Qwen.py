@@ -41,7 +41,7 @@ FullPmt = data["prompt"]
 
 def evaluate_QwenVL2_7B(select="general"):
     
-    def parse_output(text):
+    def parse_output(text, _type="video"):
         result = {
             "final_verdict": None,  # 1 (Image 1), 0 (Tie), -1 (Image 2)
             "checklist_count": 0,  # Number of checklist dimensions
@@ -49,15 +49,25 @@ def evaluate_QwenVL2_7B(select="general"):
             "analysis_length": 0,  # Total character count of analysis sections (Deep Analysis + Holistic Verdict)
             "total_length": len(text)  # Total character count of the entire text
         }
-        
-        if "image 1 is better" in text.lower():
-            result["final_verdict"] = 1
-        elif "image 2 is better" in text.lower():
-            result["final_verdict"] = -1
+        if _type == "image":
+            if "image 1 is better" in text.lower():
+                result["final_verdict"] = 1
+            elif "image 2 is better" in text.lower():
+                result["final_verdict"] = -1
+            else:
+                result["final_verdict"] = 0
         else:
-            result["final_verdict"] = 0
+            if "video 1 is better" in text.lower():
+                result["final_verdict"] = 1
+            elif "video 2 is better" in text.lower():
+                result["final_verdict"] = -1
+            else:
+                result["final_verdict"] = 0
+        
         flag = True
-        for _ in ["checklist generation", "detailed comparison", "deep analysis", "holistic verdict","final verdict"]:
+        # for _ in ["checklist generation", "detailed comparison", "deep analysis", "holistic verdict","final verdict"]:
+        #     flag = flag and _ in text.lower()
+        for _ in ["<think>","</think>" , "<answer>", "</answer>"]:
             flag = flag and _ in text.lower()
         result["is_valid_format"] = flag
         result["analysis_length"] =  len(text)

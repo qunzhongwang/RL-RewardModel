@@ -300,6 +300,7 @@ def main(_):
 
     
     #model.gradient_checkpointing_enable()
+    model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant":False})
     #,cumulative_sums, cumulative_counts
     if config.inference:
         model, loader, validation_loader = accelerator.prepare(model, loader, validation_loader)
@@ -322,7 +323,10 @@ def main(_):
         accelerator.init_trackers(
             project_name=config.Project_name,
             config=config.to_dict(),
-            init_kwargs={"wandb": {"name": config.run_name}},
+            init_kwargs={"wandb": {
+                "name": config.run_name,
+                "entity":"KwaiAiTraining",
+            }},
         )
     logger.info(f"\n{config}")
 
@@ -340,7 +344,6 @@ def main(_):
     for epoch in tqdm(range(init_epoch, config.num_epochs)):
         #logger.info("next epoch")
         model.train()
-        model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant":False})
         # for _ in model.parameters():
         #     _.requires_grad_()
         #     break()
@@ -348,42 +351,47 @@ def main(_):
         tmp_grad = []
         iter_lth = len(loader)
         for idx, batch in tqdm(enumerate(loader)):
-            print(batch[1][0]['caption'])
-            loss,retInfo = reward_func(batch[0],accelerator)
-            for key in retInfo:
-                if isinstance(retInfo[key], torch.Tensor):
-                    retInfo[key] = retInfo[key].item()
-                if key not in cumulative_sums:
-                    cumulative_sums[key] = 0.0
-                    cumulative_counts[key] = 0
-                cumulative_sums[key] += retInfo[key]
-                cumulative_counts[key] += 1
-            correctness_queue.append(retInfo["global avg correctness"])
-            reward_queue.append(retInfo["global avg reward"])
-            std_queue.append(retInfo["global reward std"])
+            try:
+                if batch[0] is None:
+                    continue
+                print(batch[1][0]['caption'])
+                loss,retInfo = reward_func(batch[0],accelerator)
+                for key in retInfo:
+                    if isinstance(retInfo[key], torch.Tensor):
+                        retInfo[key] = retInfo[key].item()
+                    if key not in cumulative_sums:
+                        cumulative_sums[key] = 0.0
+                        cumulative_counts[key] = 0
+                    cumulative_sums[key] += retInfo[key]
+                    cumulative_counts[key] += 1
+                correctness_queue.append(retInfo["global avg correctness"])
+                reward_queue.append(retInfo["global avg reward"])
+                std_queue.append(retInfo["global reward std"])
 
-            if not config.inference:
-                optimizer.zero_grad()
-                #print(torch.cuda.memory_summary())
-                accelerator.backward(loss)
-            
-                if accelerator.sync_gradients:
-                    params_to_clip = (p for p in model.parameters() if p.requires_grad)
-                    tmp_grad.append(_global_grad_norm(model.parameters()))
-                    accelerator.print(_global_grad_norm(model.parameters()))
-                    accelerator.print(tmp_grad)
-                    accelerator.clip_grad_norm_(params_to_clip, config.train.max_grad_norm)
-                optimizer.step()
-                loss = loss.item() if loss else 0.
-            else:
-                loss = 0.
+                if not config.inference:
+                    optimizer.zero_grad()
+                    #print(torch.cuda.memory_summary())
+                    accelerator.backward(loss)
+                
+                    if accelerator.sync_gradients:
+                        params_to_clip = (p for p in model.parameters() if p.requires_grad)
+                        tmp_grad.append(_global_grad_norm(model.parameters()))
+                        accelerator.print(_global_grad_norm(model.parameters()))
+                        accelerator.print(tmp_grad)
+                        accelerator.clip_grad_norm_(params_to_clip, config.train.max_grad_norm)
+                    optimizer.step()
+                    loss = loss.item() if loss else 0.
+                else:
+                    loss = 0.
 
-            if idx % config.log_freq!= 0:
-                accelerator.log(
-                    {"loss": loss,},
-                    step=(iter_lth * epoch + idx) #accelerator.num_processes,
-                )
-            
+                if idx % config.log_freq!= 0:
+                    accelerator.log(
+                        {"loss": loss,},
+                        step=(iter_lth * epoch + idx) #accelerator.num_processes,
+                    )
+            except Exception as exp:
+                print(f"{exp}")
+                pass
             # 每隔 10 个 batch 记录一次日志（仅主进程）
             if accelerator.is_main_process and idx % config.log_freq == 0:
                 cumulative_avg_info = {
