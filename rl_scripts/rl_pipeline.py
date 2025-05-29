@@ -331,8 +331,8 @@ def main(_):
 
     reward_fn = getattr(ddpo_pytorch.vlm_as_rm.rewards_Qwen, config.reward.reward_pw_fn)(select=config.select)
     
-    def reward_func(batch,accelerator):
-        loss,retInfo = reward_fn(batch, toolbox= (model, processor,logger), accelerator=accelerator,config=config)
+    def reward_func(batch,accelerator, curr_step=None):
+        loss,retInfo = reward_fn(batch, toolbox= (model, processor,logger), accelerator=accelerator,config=config,curr_step=curr_step)
         return loss, retInfo
 
     correctness_queue = deque(maxlen=5)
@@ -354,7 +354,7 @@ def main(_):
                     continue
                 print(batch[1][0]['caption'][:160])
                 # logger.info(batch[1][0]['caption'][:50])
-                loss,retInfo = reward_func(batch[0],accelerator)
+                loss,retInfo = reward_func(batch[0],accelerator, (iter_lth * epoch + idx))
                 doc = retInfo.pop("doc to record", None)
                 chz = retInfo.pop("chz to record", None)
                 for key in retInfo:
@@ -443,7 +443,7 @@ def main(_):
 
             with torch.no_grad():
                 for val_idx, val_batch in tqdm(enumerate(validation_loader), desc="Validation"):
-                    val_loss, val_retInfo = reward_func(val_batch[0], accelerator)
+                    val_loss, val_retInfo = reward_func(val_batch[0], accelerator, (iter_lth * epoch + idx))
                     for key in val_retInfo:
                         if isinstance(val_retInfo[key], torch.Tensor):
                             val_retInfo[key] = val_retInfo[key].item()
