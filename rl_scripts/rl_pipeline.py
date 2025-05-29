@@ -158,14 +158,13 @@ def main(_):
     if config.pretrained.model == "Qwen/Qwen2-VL-7B-Instruct":
         processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-7B-Instruct")
     else:
-        min_pixels = 16*14*14
-        max_pixels = 120*14*14
+        min_pixels = config.input_conf.min_pixels
+        max_pixels = config.input_conf.max_pixels
         processor = AutoProcessor.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct", min_pixels=min_pixels, max_pixels=max_pixels)
     
     rank = accelerator.local_process_index
 
     # if rank == 0:
-
     #     print("Main process before breakpoint")
     #     import pdb
     #     pdb.set_trace() 

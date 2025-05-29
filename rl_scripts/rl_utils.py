@@ -218,21 +218,7 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None,vi
 
             invs.append(inv)
             if use_frames:
-                
-                selected_frames = get_frame_list(output_path)
-                
-                msg = [
-                    {
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "video",
-                                "video": selected_frames,
-                                "fps": 1.0,
-                            },
-                            {"type": "text", "text": prompt},
-                        ],
-                    }]
+                pass
             else:
 
                 msg = [
@@ -242,16 +228,16 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None,vi
                             {
                                 "type": "video",
                                 "video": f"{sample[lvd]}",
-                                "max_pixels": 14*14*80,
-                                "total_pixels": 1024 * 28 * 28,
+                                "max_pixels": config.input_conf.input_pixel_conf,  # 14 * 14 *80,
+                                "total_pixels": config.input_conf.total_pixel,  # 1024 * 28 * 28,
                                 "fps": fps,
                             },
                             {
                                 "type": "video",
                                 "video": f"{sample[rvd]}",
-                                "max_pixels": 14*14*80,
+                                "max_pixels": config.input_conf.input_pixel_conf,  # 14 * 14 * 80,
+                                "total_pixels": config.input_conf.total_pixel,  # 1024 * 28 * 28,
                                 "fps":fps,
-                                "total_pixels": 1024 * 28 * 28,
                             },
                             {"type": "text", "text": my_prompt.format(prompt=sample["caption"])},
                         ],
@@ -264,13 +250,15 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None,vi
                 )
             )
             msgs.append(msg)
+
         # tokenizer 会把 <image> placeholder 插进去
-        #breakpoint()
+        # breakpoint()
         try:
             image_inputs, video_inputs, video_kwargs = process_vision_info(msgs, return_video_kwargs=True)
             model_inputs = processor(text=prompts,images=image_inputs,videos=video_inputs, padding=True,return_tensors="pt",**video_kwargs)
             print(model_inputs["pixel_values_videos"].shape)
             rank = accelerator.local_process_index
+        
             # if rank == 0:
             #     print("Main process before breakpoint")
             #     import pdb
@@ -283,8 +271,6 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None,vi
             model_inputs["invs"] = invs
             if counter_closure and accelerator.is_main_process and counter_closure[0] % config.log_freq == 0 and False:
                 
-                # idx = counter_closure[0]
-                
                 wandb.log(
                     {
                         "video_case":[
@@ -295,8 +281,6 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None,vi
                     commit=False,
                 )
 
-
-            #breakpoint()
             return model_inputs, batch
         except Exception as exp:
             print(f"{exp}")

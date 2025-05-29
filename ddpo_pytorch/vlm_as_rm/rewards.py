@@ -7,6 +7,7 @@ import json
 import base64
 
 def evaluate_image_with_prompt():
+    
     def get_image_base64(image):
         """
         Accepts an image (NumPy array or PyTorch tensor), processes it, and 

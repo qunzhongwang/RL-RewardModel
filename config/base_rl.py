@@ -44,12 +44,26 @@ def get_config():
 
     config.grpo_1gpu_size = 2
     
+    ###### Input Config ######
+    config.input_conf = input_cinf = ml_collections.ConfigDict()
+    config.input_conf.min_pixels = 16 * 14 * 14
+    config.input_conf.max_pixels = 120 * 14 * 14
+    config.input_conf.input_pixel_conf = 14 * 14 * 80 # patch_size * patch_size * token_count
+    config.input_conf.total_pixel = 1024 * 28 * 28  # patch_size * patch_size * token_count
+    
 
     ###### Pretrained Model ######
     config.pretrained = pretrained = ml_collections.ConfigDict()
     pretrained.model = "Qwen/Qwen2.5-VL-7B-Instruct"
     pretrained.revision = "main"
     pretrained.attn_implementation = "flash_attention_2"
+
+    ###### Transformer Reason ######
+    config.transformer_reason_conf = transformer_reason_conf = ml_collections.ConfigDict()
+    transformer_reason_conf.do_sample =  True
+    transformer_reason_conf.temperature =  0.5
+    transformer_reason_conf.top_k =  50
+    transformer_reason_conf.num_return_sequences =  config.grpo_1gpu_size
 
     ###### Reward ######
     config.reward = reward = ml_collections.ConfigDict()
