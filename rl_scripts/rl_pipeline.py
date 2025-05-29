@@ -111,7 +111,7 @@ def main(_):
     
     rank = accelerator.process_index 
 
-    seed = 42  # + rank 
+    seed = 42  + rank 
     torch.manual_seed(seed)
     random.seed(seed)
     np.random.seed(seed)
@@ -352,8 +352,8 @@ def main(_):
                     doc = ""
                     chz = 0.5
                     continue
-                #print(batch[1][0]['caption'])
-                logger.info(batch[1][0]['caption'][:50])
+                print(batch[1][0]['caption'][:160])
+                # logger.info(batch[1][0]['caption'][:50])
                 loss,retInfo = reward_func(batch[0],accelerator)
                 doc = retInfo.pop("doc to record", None)
                 chz = retInfo.pop("chz to record", None)
