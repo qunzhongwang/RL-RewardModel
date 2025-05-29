@@ -376,7 +376,8 @@ def evaluate_QwenVL2_7B(select="general"):
             "top_k": 200,
             "num_return_sequences": config.grpo_1gpu_size
         }
-
+        if isinstance(inputs["second_per_grid_ts"],torch.Tensor):
+            inputs["second_per_grid_ts"] = [inputs["second_per_grid_ts"]]
         generated_sequences = model.generate(**inputs,max_new_tokens=2048,pad_token_id=pad_token_id, return_dict_in_generate=False,use_cache=False,**generate_kwargs)
         attention_mask = (generated_sequences != pad_token_id).long()
         input_length = inputs.input_ids.shape[1]

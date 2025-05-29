@@ -389,10 +389,11 @@ def main(_):
                     for key in cumulative_sums
                     if cumulative_counts[key] != 0
                 }
+                
                 cur_table = wandb.Table(cur_table.columns, cur_table.data.append([
                     (iter_lth * epoch + idx),
-                    wandb.Video(batch[1]["chosen_video_path"][-1]),
-                    wandb.Video(batch[1]["rejected_video_path"][-1]),
+                    wandb.Video(batch[1][-1]["chosen_video_path"]),
+                    wandb.Video(batch[1][-1]["rejected_video_path"]),
                     doc,
                     chz,
                 ]))
