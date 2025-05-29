@@ -265,7 +265,7 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None,vi
             msgs.append(msg)
 
         # tokenizer 会把 <image> placeholder 插进去
-        breakpoint()
+        # breakpoint()
         try:
             
             image_inputs, video_inputs, video_kwargs = process_vision_info(msgs, return_video_kwargs=True)
