@@ -338,13 +338,16 @@ def evaluate_QwenVL2_7B(select="ppo"):
             rzlths.append(resDict["analysis_length"])
 
             if not fmt:
-                curr_reward = -0.5
+                curr_reward = config.reward.reward_of_wrong_fmt
             elif chiz is None:
-                curr_reward = -0.5
+                curr_reward = config.reward.reward_of_none_ans
             else:
-                curr_reward =  int(fmt) + int((1-2*inv) == chiz)*3 + int( chiz == 0 ) - 1.5
+                curr_reward =  config.reward.reward_of_accepted_fmt * int(fmt) +\
+                int( ( 1 - 2 * inv ) == chiz ) * config.reward.reward_of_accepted_ans +\
+                int( chiz == 0 ) * config.reward.reward_of_tie_ans
+
                 if config["reward"]["reward_long_cot"]:
-                    curr_reward += resDict["total_length"]/1000. - 0.85
+                    curr_reward += (resDict["total_length"] - config.reward.reward_long_cot_reward_base ) * config.reward.reward_long_cot_reward_degree
             
             rewards.append(curr_reward)
             fmts.append(int(fmt))
@@ -396,7 +399,6 @@ def evaluate_QwenVL2_7B(select="ppo"):
         
         #ref_logits = ref_output.logits[:, input_length:]
         #print(torch.cuda.memory_summary())
-
         ref_generated_logits = ref_generated_output["logits"]
         ref_logp_list = []
         for i, output_ids in enumerate(generated_sequences[:, input_length:]):
@@ -420,7 +422,7 @@ def evaluate_QwenVL2_7B(select="ppo"):
         if config["reward"]["reward_method"] == "std":
             rewards_tensor = (rewards_tensor - global_mean) / (global_std + 1e-8)  # 避免除以0
         elif config["reward"]["reward_method"] == "unif":
-            rewards_tensor = (rewards_tensor -1.05) / 1.5
+            rewards_tensor = (rewards_tensor) * config.reward.reward_scale_ratio
         
         clip_epsilon = config["rl_conf"]["clip_epsilon"]
         entropy_coef = config["rl_conf"]["entropy_coef"]

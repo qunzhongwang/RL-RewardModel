@@ -72,7 +72,16 @@ def get_config():
     reward.reward_method = "unif"
     reward.reward_pw_fn = "evaluate_QwenVL2_7B"
     reward.reward_long_cot = False
+    config.reward.reward_of_tie_ans = .25
+    config.reward.reward_of_accepted_ans = 2.
+    config.reward.reward_of_accepted_fmt = .5
+    config.reward.reward_of_wrong_fmt = -0.5
+    config.reward.reward_of_none_ans = -0.5
+    config.reward.reward_long_cot_reward_degree = 0.0025
+    config.reward.reward_long_cot_reward_base = 1500
+    config.reward.reward_scale_ratio = 1/1.5
 
+    
     ###### Training ######
     config.train = train = ml_collections.ConfigDict()
     train.batch_size = 1
