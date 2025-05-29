@@ -391,14 +391,14 @@ def main(_):
                     for key in cumulative_sums
                     if cumulative_counts[key] != 0
                 }
-                
-                cur_table = wandb.Table(cur_table.columns, cur_table.data.append([
+                cur_table.data.append([
                     (iter_lth * epoch + idx),
                     wandb.Video(batch[1][-1]["chosen_video_path"]),
                     wandb.Video(batch[1][-1]["rejected_video_path"]),
                     doc,
                     chz,
-                ]))
+                ])
+                cur_table = wandb.Table(cur_table.columns, cur_table.data)
                 accelerator.log({
                     "Case_Study_Table":cur_table,
                     "loss": loss,
@@ -414,7 +414,7 @@ def main(_):
                 tmp_grad.clear()
 
             #增加 save ckpoint的历程
-            if accelerator.is_main_process and not config.inference and (iter_lth * epoch + idx) % config.ckpt_freq :
+            if accelerator.is_main_process and not config.inference and (iter_lth * epoch + idx) % config.ckpt_freq and (iter_lth * epoch + idx):
                 os.makedirs(config.logdir, exist_ok=True) 
                 checkpoint_path = os.path.join(config.logdir, f"checkpoint_{accelerator.num_processes}gpus_z{config.deepspeed_stage}_{ckptuid}_{(iter_lth * epoch + idx)}.pt")
                 accelerator.save({
