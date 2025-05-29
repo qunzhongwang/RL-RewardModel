@@ -17,7 +17,7 @@ def get_config():
     config.ckpt_freq = 150
     config.num_checkpoint_limit = 5
     config.log_freq = 5
-    config.video_fps = 8.
+    config.video_fps = 1.
     
 
 

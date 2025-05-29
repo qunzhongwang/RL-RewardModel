@@ -129,7 +129,8 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None,vi
     if data_name in cache_mapping:
         parser_type = cache_mapping[data_name]
 
-    def collate(batch):    
+    def collate(batch):  
+        
         #胜负随机inverse
         for sample in batch:
             if data_name == "HPD_v2":

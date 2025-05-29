@@ -342,6 +342,8 @@ def main(_):
         for idx, batch in tqdm(enumerate(loader)):
             try:
                 if batch[0] is None:
+                    doc = ""
+                    chz = 0.5
                     continue
                 #print(batch[1][0]['caption'])
                 loss,retInfo = reward_func(batch[0],accelerator)
