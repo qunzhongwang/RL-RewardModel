@@ -197,6 +197,8 @@ def main(_):
         split_dataset = dataset.train_test_split(test_size=0.1, seed=42)
         train_dataset = split_dataset["train"]
         val_dataset = split_dataset["test"]
+        train_dataset = train_dataset.shuffle(seed=42).select(range(int(len(train_dataset) * 0.1)))
+        val_dataset = val_dataset.shuffle(seed=42).select(range(int(len(val_dataset) * 0.1)))
         train_dataset = train_dataset.select_columns(["chosen_video_path", "rejected_video_path", "caption"])
         val_dataset = val_dataset.select_columns(["chosen_video_path", "rejected_video_path", "caption"])
     else:
