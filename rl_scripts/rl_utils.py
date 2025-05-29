@@ -290,8 +290,8 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None,vi
                             wandb.Video(sample[lvd],caption=f"ground_truth:{int(invs[-1] == 0)}"),
                             wandb.Video(sample[rvd],caption=f"ground_truth:{int(invs[-1] == 0)}")
                         ],
-                        commit=False
-                    }
+                    },
+                    commit=False,
                 )
 
 
