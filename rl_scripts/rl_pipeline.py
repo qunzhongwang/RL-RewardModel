@@ -30,7 +30,7 @@ from accelerate.state import AcceleratorState
 
 from accelerate.utils import set_seed, ProjectConfiguration, FP8RecipeKwargs
 from accelerate.logging import get_logger
-from transformers import Qwen2VLForConditionalGeneration, AutoTokenizer, AutoProcessor
+from transformers import Qwen2VLForConditionalGeneration, Qwen2_5_VLForConditionalGeneration, AutoTokenizer, AutoProcessor
 from qwen_vl_utils import process_vision_info
 
 from peft import LoraConfig, get_peft_model, PeftModel
@@ -75,16 +75,15 @@ def main(_):
     # set_seed(config.seed)
     # 获取当前 GPU 的进程 ID
     
-    
     if config.deepspeed_stage in [1,2]:
         deepspeed_plugin = DeepSpeedPlugin(
-            zero_stage=config.deepspeed_stage,  # ZeRO Stage 选择
+            zero_stage=config.deepspeed_stage,
             gradient_accumulation_steps=config.train.gradient_accumulation_steps,
     )
     
     elif config.deepspeed_stage == 3:
         deepspeed_plugin = DeepSpeedPlugin(
-            zero_stage=config.deepspeed_stage,  # 可以拓展额外配置
+            zero_stage=config.deepspeed_stage,
             gradient_accumulation_steps=config.train.gradient_accumulation_steps,
         )
     
@@ -110,37 +109,74 @@ def main(_):
             gradient_accumulation_steps=config.train.gradient_accumulation_steps,
         )
     
-    rank = accelerator.process_index  # 每个 GPU 的唯一进程 ID
+    rank = accelerator.process_index 
 
-    # 设置随机种子
-    seed = 42 + rank  # 每个 GPU 的种子不同
+    seed = 42 + rank 
     torch.manual_seed(seed)
     random.seed(seed)
     np.random.seed(seed)
 
-    # 如果使用 CUDA
     if torch.cuda.is_available():
         torch.cuda.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
     print(f"Rank {rank}: Random seed set to {seed}")
 
     if config.deepspeed_stage != 3:
-        model = Qwen2VLForConditionalGeneration.from_pretrained(
-            "Qwen/Qwen2-VL-7B-Instruct", 
-            torch_dtype=torch.bfloat16, 
-            device_map= accelerator.device, 
-            attn_implementation=config.pretrained.attn_implementation,
-            cache_dir="/m2v_intern/wangqunzhong/research/huggingface/model/Qwen/Qwen-VL-7B-Chat",
-        )
+        if config.pretrained.model == "Qwen/Qwen2-VL-7B-Instruct":
+            model = Qwen2VLForConditionalGeneration.from_pretrained(
+                "Qwen/Qwen2-VL-7B-Instruct", 
+                torch_dtype=torch.bfloat16, 
+                device_map= accelerator.device, 
+                attn_implementation=config.pretrained.attn_implementation,
+                cache_dir="/m2v_intern/wangqunzhong/research/huggingface/model/Qwen/Qwen-VL-7B-Chat",
+            )
+        else:
+            model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+                    "Qwen/Qwen2.5-VL-7B-Instruct", 
+                    torch_dtype=torch.bfloat16, 
+                    device_map= accelerator.device, 
+                    attn_implementation=config.pretrained.attn_implementation,
+                    cache_dir="/m2v_intern/wangqunzhong/research/huggingface/model/Qwen/Qwen2.5-VL-7B-Chat",
+                )
     else:
-        model = Qwen2VLForConditionalGeneration.from_pretrained(
-            config.pretrained.model, 
-            torch_dtype=torch.bfloat16, 
-            low_cpu_mem_usage=False,
-            attn_implementation=config.pretrained.attn_implementation,
-            cache_dir="/m2v_intern/wangqunzhong/research/huggingface/model/Qwen/Qwen-VL-7B-Chat",
-        )
-    processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-7B-Instruct")
+        if config.pretrained.model == "Qwen/Qwen2-VL-7B-Instruct":
+            model = Qwen2VLForConditionalGeneration.from_pretrained(
+                config.pretrained.model, 
+                torch_dtype=torch.bfloat16, 
+                low_cpu_mem_usage=False,
+                attn_implementation=config.pretrained.attn_implementation,
+                cache_dir="/m2v_intern/wangqunzhong/research/huggingface/model/Qwen/Qwen-VL-7B-Chat",
+            )
+        else:
+            model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+                config.pretrained.model, 
+                torch_dtype=torch.bfloat16, 
+                low_cpu_mem_usage=False,
+                attn_implementation=config.pretrained.attn_implementation,
+                cache_dir="/m2v_intern/wangqunzhong/research/huggingface/model/Qwen/Qwen2.5-VL-7B-Chat",
+            )
+    if config.pretrained.model == "Qwen/Qwen2-VL-7B-Instruct":
+        processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-7B-Instruct")
+    else:
+        min_pixels = 16*14*14
+        max_pixels = 120*14*14
+        processor = AutoProcessor.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct", min_pixels=min_pixels, max_pixels=max_pixels)
+    
+    rank = accelerator.local_process_index
+
+    # if rank == 0:
+
+    #     print("Main process before breakpoint")
+    #     import pdb
+    #     pdb.set_trace() 
+    #     print("Main process after breakpoint")
+    # else:
+    #     # 子进程逻辑
+    #     print(f"Sub process {rank} before wait")
+    
+
+    accelerator.wait_for_everyone()
+
     processor.tokenizer.padding_side = "left"
 
 
@@ -155,84 +191,41 @@ def main(_):
         #config.data_conf.chunk_size = 10
         train_dataset,val_dataset = get_streamed_dataset(dataset_name, config.data_conf.chunk_size, config.data_conf.verify_chunk_size)
     elif data_name == "human_video":
-        # dataset = load_dataset(
-        #     "csv", 
-        #     data_files="/m2v_intern/wangqunzhong/research/kwai_data/dataset/data.csv",
-        #     split="train[:90%]+validation[:10%]"
-        # )
-        # dataset = dataset.select_columns(["chosen_video_path", "rejected_video_path", "caption"])
-        # train_dataset,val_dataset = dataset["train"], dataset["validation"]
-        # 加载完整数据集
         dataset = load_dataset(
         "csv", 
         data_files="/m2v_intern/wangqunzhong/research/kwai_data/dataset/data.csv"
         )["train"]
-
-        # 按 90:10 划分训练集和验证集
         split_dataset = dataset.train_test_split(test_size=0.1, seed=42)
-
-        # 训练集和验证集
         train_dataset = split_dataset["train"]
         val_dataset = split_dataset["test"]
-
-        # 选择特定列
         train_dataset = train_dataset.select_columns(["chosen_video_path", "rejected_video_path", "caption"])
         val_dataset = val_dataset.select_columns(["chosen_video_path", "rejected_video_path", "caption"])
-
-        # print(train_dataset)
-        # print(val_dataset)
-        # breakpoint()
     else:
         dataset = load_dataset(dataset_name, split="validation", num_proc=64)
     
-    loader = DataLoader(train_dataset, batch_size=config.train.batch_size, shuffle=False, collate_fn=make_collate_fn(processor, data_name, accelerator=accelerator))
+    my_counter_closure = [0]
+    loader = DataLoader(
+        train_dataset, 
+        batch_size=config.train.batch_size, 
+        shuffle=False, 
+        collate_fn=make_collate_fn(
+            processor, 
+            data_name, 
+            accelerator=accelerator, 
+            parser_type=config.data_type, 
+            video_fps=config.video_fps, 
+            config=config,
+            counter_closure=my_counter_closure
+        ))
+    
     validation_loader =  DataLoader(val_dataset, batch_size=config.val.val_batch_size, shuffle=True, collate_fn=make_collate_fn(processor, data_name))
     unique_id,ckptuid = get_uid()
 
     config.run_name += "_" + data_name + unique_id
     outputfile_name = "outfile_" + config.run_name
 
-
-    # if config.resume_from:
-    #     config.resume_from = os.path.normpath(os.path.expanduser(config.resume_from))
-    #     if "checkpoint_" not in os.path.basename(config.resume_from):
-    #         checkpoints = list(
-    #             filter(lambda x: "checkpoint_" in x, os.listdir(config.resume_from))
-    #         )
-    #         if len(checkpoints) == 0:
-    #             raise ValueError(f"No checkpoints found in {config.resume_from}")
-    #         config.resume_from = os.path.join(
-    #             config.resume_from,
-    #             sorted(checkpoints, key=lambda x: int(x.split("_")[-1]))[-1],
-    #         )
     
-    cumulative_sums = {
-    #     "fomat correctness": 0.,
-    #     "choose correctness": 0.,
-    #     "avg lth": 0.,
-    #     "avg reward": 0.,
-    #     "avg reasoning": 0.,
-    #     "global avg correctness":0.,
-    #     "global avg reward":0.,
-    #     "global reward std":0.,
-    #     "pure loss":0.,
-    #     "kl loss":0.,
-    # #"avg check point count": 0,
-    }
-
-    cumulative_counts = {
-    #     "fomat correctness": 0.,
-    #     "choose correctness": 0.,
-    #     "avg lth": 0.,
-    #     "avg reward": 0.,
-    #     "avg reasoning": 0.,
-    #     "global avg correctness":0.,
-    #     "global avg reward":0.,
-    #     "global reward std":0.,
-    #     "pure loss":0.,
-    #     "kl loss":0.,
-    # #"avg check point count": 0,
-        }
+    cumulative_sums = {}; cumulative_counts = {}
 
     # 恢复 checkpoint
     if config.resume_ckpt:
@@ -298,10 +291,8 @@ def main(_):
             optimizer = AdamW(model.parameters(), lr=config.train.learning_rate)
     
 
-    
-    #model.gradient_checkpointing_enable()
     model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant":False})
-    #,cumulative_sums, cumulative_counts
+
     if config.inference:
         model, loader, validation_loader = accelerator.prepare(model, loader, validation_loader)
     else:
@@ -331,7 +322,7 @@ def main(_):
     logger.info(f"\n{config}")
 
 
-    reward_fn = getattr(ddpo_pytorch.vlm_as_rm.rewards_Qwen, config.reward.reward_pw_fn)(select="grpo")
+    reward_fn = getattr(ddpo_pytorch.vlm_as_rm.rewards_Qwen, config.reward.reward_pw_fn)(select=config.select)
     
     def reward_func(batch,accelerator):
         loss,retInfo = reward_fn(batch, toolbox= (model, processor,logger), accelerator=accelerator,config=config)
@@ -340,29 +331,29 @@ def main(_):
     correctness_queue = deque(maxlen=5)
     reward_queue = deque(maxlen=5)
     std_queue = deque(maxlen=5)
-    #global_step = 0
+
+    cur_table = wandb.Table(columns=["step", "Video Left", "Video Right","correct or not", "reasoning"],data=[])
+
     for epoch in tqdm(range(init_epoch, config.num_epochs)):
         #logger.info("next epoch")
         model.train()
-        # for _ in model.parameters():
-        #     _.requires_grad_()
-        #     break()
-        #breakpoint()
         tmp_grad = []
         iter_lth = len(loader)
         for idx, batch in tqdm(enumerate(loader)):
             try:
                 if batch[0] is None:
                     continue
-                print(batch[1][0]['caption'])
+                #print(batch[1][0]['caption'])
                 loss,retInfo = reward_func(batch[0],accelerator)
+                doc = retInfo.pop("doc to record", None)
+                chz = retInfo.pop("chz to record", None)
                 for key in retInfo:
                     if isinstance(retInfo[key], torch.Tensor):
                         retInfo[key] = retInfo[key].item()
                     if key not in cumulative_sums:
                         cumulative_sums[key] = 0.0
                         cumulative_counts[key] = 0
-                    cumulative_sums[key] += retInfo[key]
+                    cumulative_sums[key] += retInfo[key] 
                     cumulative_counts[key] += 1
                 correctness_queue.append(retInfo["global avg correctness"])
                 reward_queue.append(retInfo["global avg reward"])
@@ -370,7 +361,6 @@ def main(_):
 
                 if not config.inference:
                     optimizer.zero_grad()
-                    #print(torch.cuda.memory_summary())
                     accelerator.backward(loss)
                 
                     if accelerator.sync_gradients:
@@ -392,27 +382,48 @@ def main(_):
             except Exception as exp:
                 print(f"{exp}")
                 pass
-            # 每隔 10 个 batch 记录一次日志（仅主进程）
+            my_counter_closure = (iter_lth * epoch + idx) + 1
             if accelerator.is_main_process and idx % config.log_freq == 0:
                 cumulative_avg_info = {
                     key: cumulative_sums[key] / cumulative_counts[key] 
                     for key in cumulative_sums
                     if cumulative_counts[key] != 0
                 }
-
+                cur_table = wandb.Table(cur_table.columns, cur_table.data.append([
+                    (iter_lth * epoch + idx),
+                    wandb.Video(batch[1]["chosen_video_path"][-1]),
+                    wandb.Video(batch[1]["rejected_video_path"][-1]),
+                    doc,
+                    chz,
+                ]))
                 accelerator.log({
-                    "loss": loss,  # 记录当前 loss
+                    "Case_Study_Table":cur_table,
+                    "loss": loss,
                     "grad norm":sum(tmp_grad) / len(tmp_grad) if tmp_grad else 0,
                     "recent reward": sum(reward_queue) / len(reward_queue) if reward_queue else 0,
                     "recent correctness": sum(correctness_queue) / len(correctness_queue) if correctness_queue else 0,
                     "recent std": (sum(std_queue) / len(std_queue))**(1/2) if std_queue else 0,
                     **cumulative_avg_info,
-                    #"step": idx           # 当前 step
+
                 },
-                step= (iter_lth * epoch + idx)#accelerator.num_processes,#global_step,
+                step= (iter_lth * epoch + idx)
                 )
                 tmp_grad.clear()
-                #增加 save ckpoint的历程
+
+            #增加 save ckpoint的历程
+            if accelerator.is_main_process and not config.inference and (iter_lth * epoch + idx) % config.ckpt_freq :
+                os.makedirs(config.logdir, exist_ok=True) 
+                checkpoint_path = os.path.join(config.logdir, f"checkpoint_{accelerator.num_processes}gpus_z{config.deepspeed_stage}_{ckptuid}_{(iter_lth * epoch + idx)}.pt")
+                accelerator.save({
+                    "epoch": epoch + 1,
+                    "optimizer_state_dict": optimizer.state_dict(),
+                    "cumulative_sums": cumulative_sums,
+                    "cumulative_counts": cumulative_counts,
+                }, checkpoint_path)
+                lora_pth = os.path.join(config.loradir,f"lora_{accelerator.num_processes}gpus_z{config.deepspeed_stage}_{ckptuid}_{epoch}")
+                model.save_pretrained(lora_pth)
+                logger.info(f"Checkpoint saved to {checkpoint_path}\nlora saved to {lora_pth}")
+        
         if not config.inference:
             model.eval()
             config.inference = True
@@ -438,25 +449,11 @@ def main(_):
 
             accelerator.log({
                     **validation_avg_info,
-                    #"step": idx           # 当前 step
                 },
-                step= (iter_lth * epoch + idx),#accelerator.num_processes,#global_step,
+                step= (iter_lth * epoch + idx),
                 )
             config.inference = False
-        #增加 save ckpoint的历程
-        if accelerator.is_main_process and not config.inference:  # 仅主进程保存
-            os.makedirs(config.logdir, exist_ok=True) 
-            checkpoint_path = os.path.join(config.logdir, f"checkpoint_{accelerator.num_processes}gpus_z{config.deepspeed_stage}_{ckptuid}_{epoch}.pt")
-            accelerator.save({
-                "epoch": epoch + 1,
-                "optimizer_state_dict": optimizer.state_dict(),
-                "cumulative_sums": cumulative_sums,
-                "cumulative_counts": cumulative_counts,
-            }, checkpoint_path)
-            lora_pth = os.path.join(config.loradir,f"lora_{accelerator.num_processes}gpus_z{config.deepspeed_stage}_{ckptuid}_{epoch}")
-            model.save_pretrained(lora_pth)
-            logger.info(f"Checkpoint saved to {checkpoint_path}\nlora saved to {lora_pth}")
-
+        
     return 0
 
 

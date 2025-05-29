@@ -14,8 +14,11 @@ def get_config():
     config.logdir = "ckpt_log"
     config.loradir = "lora_log"
     config.save_freq = 20
+    config.ckpt_freq = 150
     config.num_checkpoint_limit = 5
     config.log_freq = 5
+    config.video_fps = 8.
+    
 
 
     config.num_epochs = 5
@@ -29,10 +32,12 @@ def get_config():
     config.Project_name = "Qwen_RL_train"
     config.run_name = "base"
     config.debug_ver = False
+    config.select = "grpo"
 
     ###### Data #####
     config.data_conf = data_conf = ml_collections.ConfigDict()
     data_conf.dataset_num_proc = 64
+    config.data_type = "video"
     data_conf.dataset_url = "/m2v_intern/wangqunzhong/research/kwai_data/dataset/data"#"/m2v_intern/wangqunzhong/research/huggingface/dataset/ymhao/HPD_v2"
     data_conf.chunk_size = 20
     data_conf.verify_chunk_size = 20
@@ -42,7 +47,7 @@ def get_config():
 
     ###### Pretrained Model ######
     config.pretrained = pretrained = ml_collections.ConfigDict()
-    pretrained.model = "Qwen/Qwen2-VL-7B-Instruct"
+    pretrained.model = "Qwen/Qwen2.5-VL-7B-Instruct"
     pretrained.revision = "main"
     pretrained.attn_implementation = "flash_attention_2"
 

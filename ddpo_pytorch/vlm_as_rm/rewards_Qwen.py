@@ -21,23 +21,10 @@ import cv2
 import pandas as pd
 from tqdm import tqdm
 
-def sum(x):
-    res = 0
-    for y in x:
-        if y is not None:
-            res += y
-    return res
-
-def sum(x):
-    res = 0
-    for y in x:
-        if y is not None:
-            res += y
-    return res
 
 with open("config/pmt_yaml/qwen_full_rsps.yaml") as ym_file:
     data = yaml.safe_load(ym_file)
-FullPmt = data["prompt"]
+my_prompt = data["prompt"]
 
 def evaluate_QwenVL2_7B(select="general"):
     
@@ -49,6 +36,7 @@ def evaluate_QwenVL2_7B(select="general"):
             "analysis_length": 0,  # Total character count of analysis sections (Deep Analysis + Holistic Verdict)
             "total_length": len(text)  # Total character count of the entire text
         }
+
         if _type == "image":
             if "image 1 is better" in text.lower():
                 result["final_verdict"] = 1
@@ -65,10 +53,9 @@ def evaluate_QwenVL2_7B(select="general"):
                 result["final_verdict"] = 0
         
         flag = True
-        # for _ in ["checklist generation", "detailed comparison", "deep analysis", "holistic verdict","final verdict"]:
-        #     flag = flag and _ in text.lower()
         for _ in ["<think>","</think>" , "<answer>", "</answer>"]:
             flag = flag and _ in text.lower()
+        
         result["is_valid_format"] = flag
         result["analysis_length"] =  len(text)
         return result
@@ -240,8 +227,8 @@ def evaluate_QwenVL2_7B(select="general"):
                         output_hidden_states=True,
                         use_cache=False
                     )
-                    #ref_logits = ref_output.logits[:, input_length:]
-            #print(torch.cuda.memory_summary())
+            # ref_logits = ref_output.logits[:, input_length:]
+            # print(torch.cuda.memory_summary())
 
             ref_generated_logits = ref_generated_output["logits"]
             ref_logp_list = []
@@ -261,7 +248,6 @@ def evaluate_QwenVL2_7B(select="general"):
             if accelerator.is_main_process:
                 accelerator.print(ratios)
 
-            # 将rewards 标准化
             if config["reward"]["reward_method"] == "std":
                 rewards_tensor = (rewards_tensor - global_mean) / (global_std + 1e-8)  # 避免除以0
             elif config["reward"]["reward_method"] == "unif":
@@ -270,7 +256,7 @@ def evaluate_QwenVL2_7B(select="general"):
             clip_epsilon = config["rl_conf"]["clip_epsilon"]
             entropy_coef = config["rl_conf"]["entropy_coef"]
             kl_loss_coef = config["rl_conf"]["kl_loss_coef"]
-            # 裁剪策略比率
+
             clipped_ratios = torch.clamp(ratios, 1 - clip_epsilon, 1 + clip_epsilon)
             loss = - torch.min(ratios * rewards_tensor, clipped_ratios * rewards_tensor).mean()
             retInfo["pure loss"] = loss.item()
@@ -377,6 +363,7 @@ def evaluate_QwenVL2_7B(select="general"):
             
         if toolbox is None:
             raise ValueError("pipe in Qwen")
+        
         model, processor,logger = toolbox
         inferenceState = False
         invs = inputs.pop("invs")
@@ -384,20 +371,13 @@ def evaluate_QwenVL2_7B(select="general"):
         inputs = inputs.to("cuda")
         pad_token_id = processor.tokenizer.pad_token_id
         generate_kwargs = {
-            "do_sample": True,           # 启用采样模式
-            "temperature": 1.7,          # 增加随机性
-            "top_k": 200,                 # 考虑前 50 个概率最高的词
+            "do_sample": True,           
+            "temperature": 1.7,
+            "top_k": 200,
             "num_return_sequences": config.grpo_1gpu_size
         }
-    
-        generated_sequences = model.generate(
-            **inputs,
-            max_new_tokens=2048,               # 控制生成的最大长度
-            pad_token_id=pad_token_id,         # 确保填充符正确
-            return_dict_in_generate=False,     # 不需要返回完整生成信息
-            use_cache=False,                    # 提高效率
-            **generate_kwargs                  # 动态更新生成参数
-        )
+
+        generated_sequences = model.generate(**inputs,max_new_tokens=2048,pad_token_id=pad_token_id, return_dict_in_generate=False,use_cache=False,**generate_kwargs)
         attention_mask = (generated_sequences != pad_token_id).long()
         input_length = inputs.input_ids.shape[1]
 
@@ -407,7 +387,7 @@ def evaluate_QwenVL2_7B(select="general"):
                 attention_mask=attention_mask,
                 return_dict=True,
                 output_hidden_states=True,
-                use_cache = False#config["transformer"]["use_cache"],
+                use_cache = False # config["transformer"]["use_cache"],
             )
             
 
@@ -437,6 +417,7 @@ def evaluate_QwenVL2_7B(select="general"):
             skip_special_tokens=True,
             clean_up_tokenization_spaces=False
         )
+
         #breakpoint()
         accelerator.print(ans[0])
 
@@ -445,7 +426,9 @@ def evaluate_QwenVL2_7B(select="general"):
                 file_path = os.path.join(config["curr_batch_dir"], f"{idx}_cot.txt")
                 with open(file_path, "w") as file:  # 使用上下文管理器
                     file.write(sample)
-
+        
+        ret_doc = ans[-1]
+        
         retInfo = []
         rewards = []
         fmts = []
@@ -454,8 +437,9 @@ def evaluate_QwenVL2_7B(select="general"):
         rzlths = []
         ckptcnts = []
         valid = []
+
         for txt,inv in zip(ans,invs):
-            resDict = parse_output(txt)
+            resDict = parse_output(txt, _type=config.get("data_type","video"))
             fmt = resDict["is_valid_format"]
             chiz = resDict["final_verdict"]
             rzlths.append(resDict["analysis_length"])
@@ -475,23 +459,22 @@ def evaluate_QwenVL2_7B(select="general"):
             lth.append(len(txt))
             valid.append(int(chiz is None))
             
+        ret_chz = chz[-1]
 
         retInfo = {
+            "doc to record" : ret_doc,
+            "chz to record" : ret_chz,
             "fomat correctness": sum(fmts) / len(fmts)*1. if fmts else 0.,  # 防止列表为空
             "choose correctness": sum(chz) / len(chz)*1. if chz else 0.,
             "avg lth": sum(lth) / len(lth)*1. if lth else 0.,
             "avg reward": sum(rewards) / len(rewards)*1. if rewards else 0.,
             "avg reasoning": sum(rzlths) / len(rzlths)*1. if rzlths else 0.,
             "valid rate": sum(valid) / len(valid)*1. if valid else 0.,
-            #"avg check point count": sum(ckptcnts) / len(ckptcnts) if ckptcnts else 0,
-
         }
         rewards_tensor = torch.tensor(rewards, dtype=torch.float32).to(accelerator.device)
         chz_tensor = torch.tensor(chz, dtype=torch.float32).to(accelerator.device)
-        # 使用 accelerator.gather() 收集所有卡上的 rewards_tensor
         all_rewards_tensor = accelerator.gather(rewards_tensor)
         all_chz_tensor = accelerator.gather(chz_tensor)
-        # 在主进程上计算全局均值和标准差（跨 8 个样本）
         global_mean = all_rewards_tensor.mean()
         chz_mean = all_chz_tensor.mean()
         global_std = all_rewards_tensor.std() if len(all_rewards_tensor) > 1 else 0.
@@ -517,7 +500,7 @@ def evaluate_QwenVL2_7B(select="general"):
                         output_hidden_states=True,
                         use_cache=False
                     )
-                    #ref_logits = ref_output.logits[:, input_length:]
+            #ref_logits = ref_output.logits[:, input_length:]
             #print(torch.cuda.memory_summary())
 
             ref_generated_logits = ref_generated_output["logits"]
@@ -559,7 +542,6 @@ def evaluate_QwenVL2_7B(select="general"):
             if config["rl_conf"]["kl_3_estimator"]:
                 kl_loss = (ratios - (total_logp - ref_total_logp)) - 1
                 kl_loss = kl_loss.mean()
-                #breakpoint()
                 loss +=  kl_loss_coef * kl_loss
                 retInfo["kl loss"] = kl_loss.item()
         else:
@@ -580,8 +562,8 @@ def evaluate_QwenVL2_7B(select="general"):
         generate_kwargs = {
             "do_sample": True,           # 启用采样模式
             "temperature": 1.5,          # 增加随机性
-            "top_k": 200,                 # 考虑前 50 个概率最高的词
-            # "top_p": 0.9,                # 核采样，动态控制候选词
+            "top_k": 200,                # 考虑前 50 个概率最高的词
+            # "top_p": 0.9,              # 核采样，动态控制候选词
             "num_return_sequences": config.grpo_1gpu_size    # 仅返回一个生成序列
         }
     
@@ -743,19 +725,20 @@ def evaluate_QwenVL2_7B(select="general"):
             clip_epsilon = config["rl_conf"]["clip_epsilon"]
             entropy_coef = config["rl_conf"]["entropy_coef"]
             kl_loss_coef = config["rl_conf"]["kl_loss_coef"]
-            # 裁剪策略比率
+
             clipped_ratios = torch.clamp(ratios, 1 - clip_epsilon, 1 + clip_epsilon)
             loss = - torch.min(ratios * rewards_tensor, clipped_ratios * rewards_tensor).mean()
             retInfo["pure loss"] = loss.item()
+            
             if config["rl_conf"]["entropy_loss"]:
                 probs = torch.softmax(generated_logits, dim=-1)  # 当前策略的概率分布
                 entropy_loss = -(probs * torch.log(probs + 1e-8)).sum(dim=-1).mean()  # 熵的负值
                 loss -= entropy_coef * entropy_loss
                 retInfo["entropy loss"] = -entropy_loss.item()
+
             if config["rl_conf"]["kl_3_estimator"]:
                 kl_loss = (ratios - (total_logp - ref_total_logp)) - 1
                 kl_loss = kl_loss.mean()
-                #breakpoint()
                 loss +=  kl_loss_coef * kl_loss
                 retInfo["kl loss"] = kl_loss.item()
         else:

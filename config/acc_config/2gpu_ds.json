@@ -4,5 +4,7 @@
     "num_processes": 2,        
     "num_machines": 1,       
     "machine_rank": 0,        
-    "use_cpu": false
+    "use_cpu": false,
+    "main_process_ip": null,
+    "main_process_port": 29502
 }

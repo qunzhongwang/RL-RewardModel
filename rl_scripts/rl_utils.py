@@ -13,9 +13,10 @@ import numpy as np
 from PIL import Image
 from datasets import Dataset, load_dataset, load_from_disk
 from qwen_vl_utils import process_vision_info
+import wandb
 
 # 自定义模块导入
-from ddpo_pytorch.vlm_as_rm.rewards_Qwen import FullPmt
+from ddpo_pytorch.vlm_as_rm.rewards_Qwen import my_prompt
 from deepspeed.utils import safe_get_full_fp32_param, safe_get_full_grad, safe_get_full_optimizer_state
 
 def get_uid():
@@ -97,7 +98,7 @@ def encodeAsPIL(imagelist, target_size=512,  as_base64=False):
 
         new_height = target_size
         new_width = int((target_size / original_height) * original_width)
-        img = img.resize((new_width, new_height))  # Resize the image
+        img = img.resize((new_width, new_height))
         images.append(img)
 
         total_width += new_width
@@ -111,22 +112,25 @@ def encodeAsPIL(imagelist, target_size=512,  as_base64=False):
         combined_image.paste(img, (x_offset, 0))
         x_offset += img.width + 5
 
-        # If as_base64 is True, return Base64-encoded string
     if as_base64:
         img_byte_arr = io.BytesIO()
         combined_image.save(img_byte_arr, format='JPEG')
         img_byte_arr.seek(0)  # Move to the beginning of the BytesIO stream
         img_base64 = base64.b64encode(img_byte_arr.read()).decode('utf-8')
         return img_base64
-
-    # Otherwise, return the PIL Image object
     return combined_image
 
-def make_collate_fn(processor, data_name,parser_type="image",accelerator=None):
-    if data_name == "human_video":
-        parser_type="video"
+def make_collate_fn(processor, data_name,parser_type="image",accelerator=None,video_fps=8., config=None,counter_closure=None):
+    
+    cache_mapping = {
+        "human_video" : "video",
+
+    }
+    if data_name in cache_mapping:
+        parser_type = cache_mapping[data_name]
+
     def collate(batch):    
-        #保证胜负 随机inverse
+        #胜负随机inverse
         for sample in batch:
             if data_name == "HPD_v2":
                 sample["caption"] = sample["prompt"]
@@ -152,8 +156,7 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None):
 
             if data_name == "pickscore" or data_name == "pickscore_normal" or data_name =="HPD_v2":
                 sample["lpic"] = process_to_IMG(sample["lpic"])
-                sample["rpic"] = process_to_IMG(sample["rpic"])
-            
+                sample["rpic"] = process_to_IMG(sample["rpic"])  
         imgs   = []
         prompts= []
         invs = []
@@ -166,7 +169,7 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None):
                 "content":[
                     {"type":"image"},
                     {"type":"image"},
-                    {"type":"text","text":FullPmt.format(locPrompt=sample["caption"])}
+                    {"type":"text","text":my_prompt.format(locPrompt=sample["caption"])}
                 ]
             }]
             prompts.append(processor.apply_chat_template(msg, add_generation_prompt=True))
@@ -197,11 +200,10 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None):
         return model_inputs, batch          # 附带原始样本用于 reward
     
     def video_collate(batch):
-        FullPmt = """\
-            Given a caption and two videos generated based on this caption, please analyze in detail the two provided videos. Evaluate them on various dimensions such as semantic consistency (how closely the video content aligns with the caption), temporal coherence (smoothness and logical flow of motion across frames), authenticity (realism and attention to detail), and any other factors you deem relevant. For each evaluation dimension, provide a score between 1-10 for both videos (e.g., Video 1: 8/10, Video 2: 6/10) and provide a concise rationale for the score. Calculate the total score for each video by summing all dimension scores. Use a chain-of-thought process to detail your reasoning steps, and enclose all your detailed reasoning within <think> and </think> tags. Then, in the <answer> tag, output exactly one of the following strings: 'Video 1 is better' or 'Video 2 is better' based on the total scores. No additional text is allowed in the <answer> section.\n\nExample output format:\n<think>\n1. Semantic consistency: Video 1 (9/10) - ...; Video 2 (7/10) - ...\n2. Temporal coherence: Video 1 (8/10) - ...; Video 2 (6/10) - ...\n3. Authenticity: Video 1 (7/10) - ...; Video 2 (5/10) - ...\n[Additional dimensions if any]: Video 2 (8/10) - ...; Video 1 (6/10) - ...\nTotal score:\nVideo 1: 9+8+7+6=30\nVideo 2: 7+6+5+8=26\n</think>\n<answer>Video 1 is better</answer>\n**Note: In the example above, scores and the final answer are placeholders meant only to demonstrate the format. Your actual evaluation should be based on the quality of two given videos.**\n\nYour task is provided as follows:\nText Caption: [{prompt}]
+        my_prompt = """\
+            Given a caption and two videos generated based on this caption, please analyze in detail the two provided videos. Evaluate them on various dimensions such as semantic consistency (how closely the video content aligns with the caption), temporal coherence (smoothness and logical flow of motion across frames), authenticity (realism and attention to detail), and any other factors you deem relevant. For each evaluation dimension, provide a score between 1-10 for both videos (e.g., Video 1: 8/10, Video 2: 6/10) and provide a concise rationale for the score. Calculate the total score for each video by summing all dimension scores. Use a chain-of-thought process to detail your reasoning steps, and enclose all your detailed reasoning within <think> and </think> tags. Then, in the <answer> tag, output exactly one of the following strings: 'Video 1 is better' or 'Video 2 is better' based on the total scores. No additional text is allowed in the <answer> section.\n\nExample output format:\n<think>\n1. Semantic consistency: Video 1 (9/10) - ...; Video 2 (7/10) - ...\n2. Temporal coherence: Video 1 (8/10) - ...; Video 2 (6/10) - ...\n3. Authenticity: Video 1 (7/10) - ...; Video 2 (5/10) - ...\n[Additional dimensions if any]: Video 2 (8/10) - ...; Video 1 (6/10) - ...\nTotal score:\nVideo 1: 9+8+7+6=30\nVideo 2: 7+6+5+8=26\n</think>\n<answer>Video 1 is better</answer>\n**Note: In the example above, scores and the final answer are placeholders meant only to demonstrate the format. Your actual evaluation should be based on the quality of two given videos.**\n\nYour task is provided as follows:\nText Caption: [{prompt}]\
         """
-        # prompt = batch['prompt'][0]
-        # answer = batch['Overall'][0]
+        fps=video_fps
         use_frames = False
         videos   = []
         prompts= []
@@ -214,11 +216,10 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None):
                 lvd, rvd, inv = "rejected_video_path", "chosen_video_path", 1
 
             invs.append(inv)
-
             if use_frames:
                 
                 selected_frames = get_frame_list(output_path)
-                # Create messages structure for frames
+                
                 msg = [
                     {
                         "role": "user",
@@ -233,29 +234,29 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None):
                     }]
             else:
 
-                # Create messages structure for the entire video
                 msg = [
                     {
                         "role": "user",
                         "content": [
                             {
                                 "type": "video",
-                                "video": f"{sample[lvd]}",#file://
-                                "max_pixels": 360 * 420,
-                                "fps": 2.0,
+                                "video": f"{sample[lvd]}",
+                                "max_pixels": 14*14*80,
+                                "total_pixels": 1024 * 28 * 28,
+                                "fps": fps,
                             },
                             {
                                 "type": "video",
-                                "video": f"{sample[rvd]}",#file://
-                                "max_pixels": 360 * 420,
-                                "fps":2.0,
+                                "video": f"{sample[rvd]}",
+                                "max_pixels": 14*14*80,
+                                "fps":fps,
+                                "total_pixels": 1024 * 28 * 28,
                             },
-                            {"type": "text", "text": FullPmt.format(prompt=sample["caption"])},
+                            {"type": "text", "text": my_prompt.format(prompt=sample["caption"])},
                         ],
                     }
                 ]
-            
-            # 同一段文字 prompt
+
             prompts.append(
                 processor.apply_chat_template(
                 msg, tokenize=False, add_generation_prompt=True
@@ -265,16 +266,34 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None):
         # tokenizer 会把 <image> placeholder 插进去
         #breakpoint()
         try:
-            image_inputs, video_inputs = process_vision_info(msgs)
-
-            
-            model_inputs = processor(text=prompts,images=image_inputs,videos=video_inputs,padding=True,return_tensors="pt",)
-            breakpoint()
-            # for key, value in model_inputs.items():
-            #     if isinstance(value, torch.Tensor) and torch.is_floating_point(value):
-            #         model_inputs[key] = value.requires_grad_()
-            # breakpoint()
+            image_inputs, video_inputs, video_kwargs = process_vision_info(msgs, return_video_kwargs=True)
+            model_inputs = processor(text=prompts,images=image_inputs,videos=video_inputs, padding=True,return_tensors="pt",**video_kwargs)
+            print(model_inputs["pixel_values_videos"].shape)
+            rank = accelerator.local_process_index
+            # if rank == 0:
+            #     print("Main process before breakpoint")
+            #     import pdb
+            #     pdb.set_trace() 
+            #     print("Main process after breakpoint")
+            # else:
+            #     # 子进程逻辑
+            #     print(f"Sub process {rank} before wait")
+    
             model_inputs["invs"] = invs
+            if counter_closure and accelerator.is_main_process and counter_closure[0] % config.log_freq == 0 and False:
+                
+                # idx = counter_closure[0]
+                
+                wandb.log(
+                    {
+                        "video_case":[
+                            wandb.Video(sample[lvd],caption=f"ground_truth:{int(invs[-1] == 0)}"),
+                            wandb.Video(sample[rvd],caption=f"ground_truth:{int(invs[-1] == 0)}")
+                        ],
+                        commit=False
+                    }
+                )
+
 
             #breakpoint()
             return model_inputs, batch
@@ -282,7 +301,12 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None):
             print(f"{exp}")
             return None, None
     
-    return collate if parser_type=="image" else video_collate
+    collate_dict = {
+        "image": collate,
+        "video": video_collate
+    }
+
+    return collate_dict[parser_type]
 
 def _global_grad_norm(parameters, norm_type=2):
     parameters = [p for p in parameters if p.grad is not None]
@@ -292,9 +316,6 @@ def _global_grad_norm(parameters, norm_type=2):
         total_norm += param_norm.item() ** norm_type
     total_norm = total_norm ** (1.0 / norm_type)
     return total_norm
-
-
-# 定义保存 checkpoint 的函数
 def save_checkpoint(epoch, model, optimizer, cumulative_sums, cumulative_counts, checkpoint_dir="ckpt_log", uid="0515"):
     os.makedirs(checkpoint_dir, exist_ok=True) 
     checkpoint_path = os.path.join(checkpoint_dir, f"checkpoint_epoch_{uid}_{epoch}.pt")
