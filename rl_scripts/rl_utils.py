@@ -256,6 +256,7 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None,vi
         try:
             image_inputs, video_inputs, video_kwargs = process_vision_info(msgs, return_video_kwargs=True)
             model_inputs = processor(text=prompts,images=image_inputs,videos=video_inputs, padding=True,return_tensors="pt",**video_kwargs)
+            breakpoint()
             accelerator.print(model_inputs["pixel_values_videos"].shape, model_inputs["image_thw"])
             rank = accelerator.local_process_index
         
