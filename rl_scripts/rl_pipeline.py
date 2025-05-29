@@ -111,7 +111,7 @@ def main(_):
     
     rank = accelerator.process_index 
 
-    seed = 42 + rank 
+    seed = 42  # + rank 
     torch.manual_seed(seed)
     random.seed(seed)
     np.random.seed(seed)
@@ -119,6 +119,7 @@ def main(_):
     if torch.cuda.is_available():
         torch.cuda.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
+    
     print(f"Rank {rank}: Random seed set to {seed}")
 
     if config.deepspeed_stage != 3:
@@ -188,11 +189,15 @@ def main(_):
 
     if data_name == "pickscore_normal" or data_name == "HPD_v2":
         #config.data_conf.chunk_size = 10
-        train_dataset,val_dataset = get_streamed_dataset(dataset_name, config.data_conf.chunk_size, config.data_conf.verify_chunk_size)
+        train_dataset,val_dataset = get_streamed_dataset(
+            dataset_name, 
+            config.data_conf.chunk_size, 
+            config.data_conf.verify_chunk_size
+        )
     elif data_name == "human_video":
         dataset = load_dataset(
-        "csv", 
-        data_files="/m2v_intern/wangqunzhong/research/kwai_data/dataset/data.csv"
+            "csv", 
+            data_files="/m2v_intern/wangqunzhong/research/kwai_data/dataset/data.csv"
         )["train"]
         split_dataset = dataset.train_test_split(test_size=0.1, seed=42)
         train_dataset = split_dataset["train"]
@@ -201,7 +206,7 @@ def main(_):
         val_dataset = val_dataset.shuffle(seed=42).select(range(int(len(val_dataset) * config.data_conf.sample_ratio * accelerator.num_processes)))
         train_dataset = train_dataset.select_columns(["chosen_video_path", "rejected_video_path", "caption"])
         val_dataset = val_dataset.select_columns(["chosen_video_path", "rejected_video_path", "caption"])
-        breakpoint()
+        # breakpoint()
     else:
         dataset = load_dataset(dataset_name, split="validation", num_proc=64)
     
