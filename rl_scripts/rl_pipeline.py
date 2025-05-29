@@ -353,6 +353,7 @@ def main(_):
                     chz = 0.5
                     continue
                 #print(batch[1][0]['caption'])
+                logger.info(batch[1][0]['caption'][:50])
                 loss,retInfo = reward_func(batch[0],accelerator)
                 doc = retInfo.pop("doc to record", None)
                 chz = retInfo.pop("chz to record", None)

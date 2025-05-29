@@ -236,6 +236,7 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None,vi
                     {
                         "role": "user",
                         "content": [
+                            {"type": "text", "text": "This is the start of Video 1:\n"},
                             {
                                 "type": "video",
                                 "video": f"{sample[lvd]}",
@@ -243,6 +244,7 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None,vi
                                 "total_pixels": config.input_conf.total_pixel,  # 1024 * 28 * 28,
                                 "fps": fps,
                             },
+                            {"type": "text", "text": "\nThis is the end of Video 1.\n\nThis is the start of Video 2:\n"},
                             {
                                 "type": "video",
                                 "video": f"{sample[rvd]}",
@@ -250,7 +252,7 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None,vi
                                 "total_pixels": config.input_conf.total_pixel,  # 1024 * 28 * 28,
                                 "fps":fps,
                             },
-                            {"type": "text", "text": my_prompt.format(prompt=sample["caption"])},
+                            {"type": "text", "text": "\nThis is the end of Video 1.\n\n" + my_prompt.format(prompt=sample["caption"])},
                         ],
                     }
                 ]
@@ -263,8 +265,9 @@ def make_collate_fn(processor, data_name,parser_type="image",accelerator=None,vi
             msgs.append(msg)
 
         # tokenizer 会把 <image> placeholder 插进去
-        # breakpoint()
+        breakpoint()
         try:
+            
             image_inputs, video_inputs, video_kwargs = process_vision_info(msgs, return_video_kwargs=True)
             model_inputs = processor(text=prompts,images=image_inputs,videos=video_inputs, padding=True,return_tensors="pt",**video_kwargs)
             
