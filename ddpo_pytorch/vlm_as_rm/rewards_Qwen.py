@@ -249,7 +249,7 @@ def evaluate_QwenVL2_7B(select="ppo"):
         
         return loss, retInfo
 
-    def _fn_grpo(inputs, toolbox=None,accelerator=None,config=None):
+    def _fn_grpo(inputs, toolbox=None,accelerator=None,config=None, curr_step=None):
             
         if toolbox is None:
             raise ValueError("pipe in Qwen")
@@ -321,7 +321,6 @@ def evaluate_QwenVL2_7B(select="ppo"):
                     file.write(sample)
         
         ret_doc = ans[-1]
-        
         retInfo = []
         rewards = []
         fmts = []
@@ -342,12 +341,14 @@ def evaluate_QwenVL2_7B(select="ppo"):
             elif chiz is None:
                 curr_reward = config.reward.reward_of_none_ans
             else:
-                curr_reward =  config.reward.reward_of_accepted_fmt * int(fmt) +\
+                import math
+                
+                curr_reward =  (config.reward.reward_of_accepted_fmt + math.ceil(curr_step/100) * 0.02)* int(fmt) +\
                 int( ( 1 - 2 * inv ) == chiz ) * config.reward.reward_of_accepted_ans +\
                 int( chiz == 0 ) * config.reward.reward_of_tie_ans
 
                 if config["reward"]["reward_long_cot"]:
-                    curr_reward += (resDict["total_length"] - config.reward.reward_long_cot_reward_base ) * config.reward.reward_long_cot_reward_degree
+                    curr_reward += (resDict["total_length"] - config.reward.reward_long_cot_reward_base ) * config.reward.reward_long_cot_reward_degree / (1. + math.ceil(curr_step/100)*0.1)
             
             rewards.append(curr_reward)
             fmts.append(int(fmt))
