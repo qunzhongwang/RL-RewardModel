@@ -201,6 +201,7 @@ def main(_):
         val_dataset = val_dataset.shuffle(seed=42).select(range(int(len(val_dataset) * 0.1)))
         train_dataset = train_dataset.select_columns(["chosen_video_path", "rejected_video_path", "caption"])
         val_dataset = val_dataset.select_columns(["chosen_video_path", "rejected_video_path", "caption"])
+        breakpoint()
     else:
         dataset = load_dataset(dataset_name, split="validation", num_proc=64)
     
