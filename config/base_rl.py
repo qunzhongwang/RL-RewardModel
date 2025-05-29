@@ -17,7 +17,7 @@ def get_config():
     config.ckpt_freq = 150
     config.num_checkpoint_limit = 5
     config.log_freq = 5
-    config.video_fps = 1.
+    config.video_fps = 12.
     
 
 
@@ -64,6 +64,7 @@ def get_config():
     transformer_reason_conf.temperature =  0.5
     transformer_reason_conf.top_k =  50
     transformer_reason_conf.num_return_sequences =  config.grpo_1gpu_size
+    transformer_reason_conf.max_new_tokens =  1024
 
     ###### Reward ######
     config.reward = reward = ml_collections.ConfigDict()

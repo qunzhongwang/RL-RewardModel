@@ -290,7 +290,13 @@ def evaluate_QwenVL2_7B(select="ppo"):
         }
         if isinstance(inputs["second_per_grid_ts"],torch.Tensor):
             inputs["second_per_grid_ts"] = inputs["second_per_grid_ts"].tolist()
-        generated_sequences = model.generate(**inputs,max_new_tokens=512,pad_token_id=pad_token_id, return_dict_in_generate=False,use_cache=False,**generate_kwargs)
+        generated_sequences = model.generate(
+            **inputs, 
+            pad_token_id=pad_token_id, 
+            return_dict_in_generate=False,
+            use_cache=False,
+            **generate_kwargs
+        )
         attention_mask = (generated_sequences != pad_token_id).long()
         input_length = inputs.input_ids.shape[1]
 
