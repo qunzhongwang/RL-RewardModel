@@ -10,7 +10,8 @@ def get_config():
     config.inference = False
     config.dataset_url = "/m2v_intern/wangqunzhong/research/huggingface/dataset/ymhao/HPD_v2"
     config.log_freq = 2
-    config.grpo_1gpu_size = 2
+    config.grpo_1gpu_size = 4
+    config.transformer_reason_conf.num_return_sequences =  config.grpo_1gpu_size
     
     ##### Data #####
     config.data_conf.chunk_size = 300
