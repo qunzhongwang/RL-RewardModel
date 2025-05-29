@@ -17,7 +17,7 @@ def get_config():
     config.data_conf.chunk_size = 300
     config.data_conf.verify_chunk_size = 50
     config.train.batch_size = 1
-    config.grpo_1gpu_size = 2
+    config.grpo_1gpu_size = 3
 
 
     config.dataset_url = "/m2v_intern/wangqunzhong/research/huggingface/dataset/ymhao/HPD_v2"

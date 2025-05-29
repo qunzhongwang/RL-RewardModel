@@ -43,7 +43,7 @@ def get_config():
     data_conf.verify_chunk_size = 20
     data_conf.sample_ratio = 0.025
 
-    config.grpo_1gpu_size = 2
+    config.grpo_1gpu_size = 3
     
     ###### Input Config ######
     config.input_conf = input_cinf = ml_collections.ConfigDict()
